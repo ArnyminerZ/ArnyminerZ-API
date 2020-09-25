@@ -15,7 +15,7 @@ require("firebase/auth");
 
 const fs = require('fs');
 
-console.log("Connecting mysql...");
+console.log("🔌 Connecting mysql...");
 const con = mysql.createConnection({
     host: properties.get('mysql.MYSQL_HOST'),
     user: properties.get('mysql.MYSQL_USER'),
@@ -23,17 +23,19 @@ const con = mysql.createConnection({
 });
 con.connect(function (error) {
     if (error)
-        console.error("Could not connect mysql. Error:", error);
+        console.error("🛑 Could not connect mysql. Error:", error);
     else {
-        console.log("Connected!")
+        console.log("  ✅ Connected!")
 
         const serviceAccount = require('./serviceAccountKey.json')
 
+        console.log("🔁 Initializing Firebase Admin...")
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
             databaseURL: "https://escalaralcoiaicomtat.firebaseio.com"
         });
 
+        console.log("🔁 Initializing Firebase...")
         firebase.initializeApp({
             apiKey: "AIzaSyCkOPsHr1kGv9r4wC9xoKiEncTvtyGpKYI",
             authDomain: "escalaralcoiaicomtat.firebaseapp.com",
@@ -51,9 +53,9 @@ con.connect(function (error) {
         const myParser = require("body-parser");
         const cors = require('cors');
 
+        console.log("🔁 Setting Up Classes...")
         const FirebaseAuthenticate = require("./src/firebase/firebase.authenticate");
         const FirebaseNotify = require("./src/firebase/firebase.notify");
-        const FirebaseLogin = require("./src/firebase/firebase.login");
         const FirebaseLoginGoogle = require("./src/firebase/firebase.login.google");
 
         const FriendRequest = require("./src/user/eaic.user.friend.request");
@@ -101,6 +103,7 @@ con.connect(function (error) {
         const auth = admin.auth()
         const firebaseAuth = firebase.auth()
 
+        console.log("🔁 Adding GET Listeners...")
         const firebaseNotify = new FirebaseNotify(messaging)
         const firebaseAuthenticate = new FirebaseAuthenticate(auth, con)
         const firebaseLogin = new FirebaseAuthenticate(auth, con)
@@ -159,19 +162,17 @@ con.connect(function (error) {
             res.status(404).send('{"result":"error", "message":"The requested address doesn\'t exist"}')
         }) // Handles 404 since it's the last get
 
+        console.log("🔁 Creating HTTP Server...")
         const httpServer = http.createServer(app)
-        console.log("Listening on " + httpPort)
         httpServer.listen(httpPort, () => {
-            console.log("  server starting on port : " + httpPort)
-            console.log("  Server ready on http://localhost:" + httpPort)
+            console.log("✅  Server ready on http://localhost:" + httpPort)
         });
 
         if (credentials !== undefined) {
+            console.log("🔁 Creating HTTPS Server...")
             const httpsServer = https.createServer(credentials, app);
-            console.log("Listening on " + httpsPort)
             httpsServer.listen(httpsPort, () => {
-                console.log("  server starting on port : " + httpsPort)
-                console.log("  Server ready on https://localhost:" + httpsPort)
+                console.log("✅  Server ready on http://localhost:" + httpsServer)
             });
         }
     }
