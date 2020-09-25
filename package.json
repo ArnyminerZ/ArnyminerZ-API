@@ -5,8 +5,9 @@
   "repository": "https://gitlab.arnyminerz.com/escalar-alcoia-i-comtat/api",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"ℹ No test script specified\"",
-    "start": "node index.js"
+    "test": "node test.js",
+    "start": "node index.js",
+    "install": "sudo bash scripts/install.sh"
   },
   "keywords": [],
   "author": "ArnyminerZ",
