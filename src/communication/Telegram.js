@@ -1,33 +1,49 @@
 const TelegramBot = require('node-telegram-bot-api');
+const fs = require('fs')
 
-module.exports = class Telegram {
-    constructor() {
-        this.telegramToken = process.env.TELEGRAM_TOKEN
-        this.isTokenSet = this.telegramToken != null
-        if (this.telegramToken == null)
-            console.log("🛑 Environment variable TELEGRAM_TOKEN not set. Won't enable Telegram integration.")
-        else {
-            console.log("🔁 Initializing Telegram Bot...")
-            this.telegramBot = new TelegramBot(this.telegramToken, {polling: true});
+module.exports = {
+    Telegram: class {
+        constructor() {
+            this.telegramToken = process.env.TELEGRAM_TOKEN
+            this.isTokenSet = this.telegramToken != null
+            if (this.telegramToken == null)
+                console.log("🛑 Environment variable TELEGRAM_TOKEN not set. Won't enable Telegram integration.")
+            else {
+                console.log("🔁 Initializing Telegram Bot...")
+                this.telegramBot = new TelegramBot(this.telegramToken, {polling: true});
 
-            this.telegramBot.onText(/\/echo (.+)/, (msg, match) => {
-                // 'msg' is the received Message from Telegram
-                // 'match' is the result of executing the regexp above on the text content
-                // of the message
+                this.telegramBot.on('message', async (msg) => {
+                    const text = msg.text
+                    if (text !== "/listen-eaic") return
 
-                const chatId = msg.chat.id;
-                const resp = match[1]; // the captured "whatever"
+                    const chatId = msg.chat.id;
+                    const user = msg.from
 
-                // send back the matched "whatever" to the chat
-                this.telegramBot.sendMessage(chatId, resp);
-            });
+                    const readListeners =
+                        fs.existsSync('.listeners.json') ?
+                            fs.readFileSync('.listeners.json', 'utf8') :
+                            '[]'
+                    const listeners = JSON.parse(readListeners)
+                    listeners.push(chatId)
 
-            this.telegramBot.on('message', (msg) => {
-                const chatId = msg.chat.id;
+                    fs.writeFileSync('.listeners.json', JSON.stringify(listeners))
 
-                // send a message to the chat acknowledging receipt of their message
-                this.telegramBot.sendMessage(chatId, 'Received your message');
-            });
+                    await this.telegramBot.sendMessage(chatId, `✅ Added you to the listeners for EAIC`)
+                });
+                console.log("✅ Telegram Bot ready!")
+            }
+        }
+
+        async sendMessage(message){
+            const readListeners =
+                fs.existsSync('.listeners.json') ?
+                    fs.readFileSync('.listeners.json', 'utf8') :
+                    '[]'
+            const listeners = JSON.parse(readListeners)
+
+            for (const l in listeners)
+                if (listeners.hasOwnProperty(l))
+                    await this.telegramBot.sendMessage(listeners[l], message)
         }
     }
 }

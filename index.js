@@ -6,7 +6,7 @@ require('./src/utils/StringUtils')
 require('./src/utils/FSUtils')
 
 const {Telegram} = require('./src/communication/Telegram')
-const telegram = Telegram()
+const telegram = new Telegram()
 
 const httpPort = 3000;
 const httpsPort = 3001;
@@ -18,20 +18,30 @@ require("firebase/auth");
 
 const fs = require('fs');
 
-process.on('exit', () => {
-    console.log("⚠ Process was exited")
+process.on('exit', async () => {
+    await telegram.sendMessage('🛑 EAIC process was exited.')
+    console.warn("⚠ Process was exited")
+    process.exit()
 })
-process.on('SIGINT', () => {
-    console.log("⚠ Forced close with Ctrl-C")
+process.on('SIGINT', async () => {
+    await telegram.sendMessage('🛑 EAIC Forced close with Ctrl-C')
+    console.warn("⚠ Forced close with Ctrl-C")
+    process.exit()
 });
-process.on('SIGUSR1', () => {
-    console.log("⚠ Forced close SIGUSR1")
+process.on('SIGUSR1', async () => {
+    await telegram.sendMessage('🛑 EAIC Forced close with SIGUSR1')
+    console.warn("⚠ Forced close SIGUSR1")
+    process.exit()
 });
-process.on('SIGUSR2', () => {
-    console.log("⚠ Forced close SIGUSR2")
+process.on('SIGUSR2', async () => {
+    await telegram.sendMessage('🛑 EAIC Forced close with SIGUSR2')
+    console.warn("⚠ Forced close SIGUSR2")
+    process.exit()
 });
-process.on('uncaughtException', () => {
-    console.log("🛑 Had uncontrolled exception!")
+process.on('uncaughtException', async (e) => {
+    await telegram.sendMessage('🛑 EAIC Had an uncontrolled exception. Log:')
+    await telegram.sendMessage(e)
+    console.error("🛑 Had uncontrolled exception!", e)
 });
 
 console.log("🔌 Connecting mysql...");
@@ -44,7 +54,7 @@ con.connect(function (error) {
     if (error)
         console.error("🛑 Could not connect mysql. Error:", error);
     else {
-        console.log("  ✅ Connected!")
+        console.log("✅ MySQL Connected!")
 
         const serviceAccount = require('./serviceAccountKey.json')
 
@@ -183,15 +193,17 @@ con.connect(function (error) {
 
         console.log("🔁 Creating HTTP Server...")
         const httpServer = http.createServer(app)
-        httpServer.listen(httpPort, () => {
+        httpServer.listen(httpPort, async () => {
             console.log("✅  Server ready on http://localhost:" + httpPort)
+            await telegram.sendMessage('ℹ EAIC is listening http on ' + httpPort)
         });
 
         if (credentials !== undefined) {
             console.log("🔁 Creating HTTPS Server...")
             const httpsServer = https.createServer(credentials, app);
-            httpsServer.listen(httpsPort, () => {
-                console.log("✅  Server ready on http://localhost:" + httpsServer)
+            httpsServer.listen(httpsPort, async () => {
+                console.log("✅  Server ready on http://localhost:" + httpsPort)
+                await telegram.sendMessage('ℹ EAIC is listening https on ' + httpsPort)
             });
         }
     }
