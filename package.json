@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js"
+    "test": "echo \"ℹ No test script specified\"",
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "ArnyminerZ",
