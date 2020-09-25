@@ -15,6 +15,22 @@ require("firebase/auth");
 
 const fs = require('fs');
 
+process.on('exit', () => {
+    console.log("⚠ Process was exited")
+})
+process.on('SIGINT', () => {
+    console.log("⚠ Forced close with Ctrl-C")
+});
+process.on('SIGUSR1', () => {
+    console.log("⚠ Forced close SIGUSR1")
+});
+process.on('SIGUSR2', () => {
+    console.log("⚠ Forced close SIGUSR2")
+});
+process.on('uncaughtException', () => {
+    console.log("🛑 Had uncontrolled exception!")
+});
+
 console.log("🔌 Connecting mysql...");
 const con = mysql.createConnection({
     host: properties.get('mysql.MYSQL_HOST'),
