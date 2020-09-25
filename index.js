@@ -5,6 +5,9 @@ const properties = propertiesReader('./eaic.ini');
 require('./src/utils/StringUtils')
 require('./src/utils/FSUtils')
 
+const {Telegram} = require('./src/communication/Telegram')
+const telegram = Telegram()
+
 const httpPort = 3000;
 const httpsPort = 3001;
 
