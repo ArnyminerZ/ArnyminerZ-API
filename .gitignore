@@ -1,0 +1,7 @@
+serviceAccountKey.json
+node_modules
+.idea
+eaic.ini
+deployment
+start_deployment.bat
+deploy.sh
