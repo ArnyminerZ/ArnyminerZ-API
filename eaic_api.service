@@ -1,0 +1,16 @@
+[Unit]
+Description=EAIC API Service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Environment=%TELEGRAM_TOKEN
+Type=simple
+Restart=always
+RestartSec=1
+User=escalar
+WorkingDirectory=%INSTALLATION_DIR
+ExecStart=/usr/bin/node %INSTALLATION_DIR
+
+[Install]
+WantedBy=multi-user.target
