@@ -61,19 +61,19 @@ con.connect(function (error) {
         console.log("🔁 Initializing Firebase Admin...")
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
-            databaseURL: "https://escalaralcoiaicomtat.firebaseio.com"
+            databaseURL: properties.get('firebase.DATABASE_URL')
         });
 
         console.log("🔁 Initializing Firebase...")
         firebase.initializeApp({
-            apiKey: "AIzaSyCkOPsHr1kGv9r4wC9xoKiEncTvtyGpKYI",
-            authDomain: "escalaralcoiaicomtat.firebaseapp.com",
-            databaseURL: "https://escalaralcoiaicomtat.firebaseio.com",
-            projectId: "escalaralcoiaicomtat",
-            storageBucket: "escalaralcoiaicomtat.appspot.com",
-            messagingSenderId: "532137251314",
-            appId: "1:532137251314:web:985a0745bd90ac8cd01b6b",
-            measurementId: "G-49HGMS07LW"
+            apiKey: properties.get('firebase.API_KEY'),
+            authDomain: properties.get('firebase.AUTH_DOMAIN'),
+            databaseURL: properties.get('firebase.DATABASE_URL'),
+            projectId: properties.get('firebase.PROJECT_ID'),
+            storageBucket: properties.get('firebase.STORAGE_BUCKET'),
+            messagingSenderId: properties.get('firebase.MESSAGING_SERVER_ID'),
+            appId: properties.get('firebase.APP_ID'),
+            measurementId: properties.get('firebase.MEASUREMENT_ID')
         })
 
         const http = require('http');
