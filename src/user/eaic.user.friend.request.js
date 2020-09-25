@@ -1,6 +1,6 @@
 const {v4: uuidv4} = require('uuid');
 
-const {sendNotification} = require("./utils.firebase");
+const {sendNotification} = require("../utils/FirebaseUtils");
 
 module.exports = class FriendRequest {
     constructor(messaging, mysql) {

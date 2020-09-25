@@ -2,35 +2,11 @@
 const propertiesReader = require('properties-reader');
 const properties = propertiesReader('./eaic.ini');
 
-if (!String.prototype.format) {
-    String.prototype.format = function () {
-        const args = arguments;
-        return this.replace(/{(\d+)}/g, function (match, number) {
-            return typeof args[number] != 'undefined'
-                ? args[number]
-                : match
-                ;
-        });
-    };
-}
-
-const deleteFolderRecursive = function (folderPath) {
-    if (fs.existsSync(folderPath)) {
-        fs.readdirSync(folderPath).forEach((file, index) => {
-            const curPath = path.join(folderPath, file);
-            if (fs.lstatSync(curPath).isDirectory()) { // recurse
-                deleteFolderRecursive(curPath);
-            } else { // delete file
-                fs.unlinkSync(curPath);
-            }
-        });
-        fs.rmdirSync(folderPath);
-    }
-};
+require('./src/utils/StringUtils')
+require('./src/utils/FSUtils')
 
 const httpPort = 3000;
 const httpsPort = 3001;
-const clearDownloadsCacheTime = 60 * 60 * 1000; // 60 minutes
 
 const mysql = require('mysql')
 const admin = require("firebase-admin");
@@ -38,7 +14,6 @@ const firebase = require("firebase/app");
 require("firebase/auth");
 
 const fs = require('fs');
-const path = require('path');
 
 console.log("Connecting mysql...");
 const con = mysql.createConnection({
@@ -76,33 +51,33 @@ con.connect(function (error) {
         const myParser = require("body-parser");
         const cors = require('cors');
 
-        const FirebaseAuthenticate = require("./firebase.authenticate");
-        const FirebaseNotify = require("./firebase.notify");
-        const FirebaseLogin = require("./firebase.login");
-        const FirebaseLoginGoogle = require("./firebase.login.google");
+        const FirebaseAuthenticate = require("./src/firebase/firebase.authenticate");
+        const FirebaseNotify = require("./src/firebase/firebase.notify");
+        const FirebaseLogin = require("./src/firebase/firebase.login");
+        const FirebaseLoginGoogle = require("./src/firebase/firebase.login.google");
 
-        const FriendRequest = require("./eaic.user.friend.request");
-        const FriendDelete = require("./eaic.user.friend.delete");
-        const FriendRequests = require("./eaic.user.friend.requests");
-        const FriendAccept = require("./eaic.user.friend.accept");
-        const FriendWith = require("./eaic.user.friend.with");
-        const Friends = require("./eaic.user.friends");
+        const FriendRequest = require("./src/user/eaic.user.friend.request");
+        const FriendDelete = require("./src/user/eaic.user.friend.delete");
+        const FriendRequests = require("./src/user/eaic.user.friend.requests");
+        const FriendAccept = require("./src/user/eaic.user.friend.accept");
+        const FriendWith = require("./src/user/eaic.user.friend.with");
+        const Friends = require("./src/user/eaic.user.friends");
 
-        const UsersList = require("./eaic.user.list");
-        const UserSearch = require("./eaic.user.search");
-        const UserData = require("./eaic.user.data");
-        const UserLog = require("./eaic.user.log");
-        const UserCompletedPaths = require('./eaic.user.completed_paths');
-        const UserMarkCompleted = require('./eaic.user.mark_completed');
-        const UserChangeUsername = require('./eaic.user.change.username');
-        const UserChangeProfileImage = require('./eaic.user.change.image');
-        const UserPreference = require('./eaic.user.preference');
+        const UsersList = require("./src/user/eaic.user.list");
+        const UserSearch = require("./src/user/eaic.user.search");
+        const UserData = require("./src/user/eaic.user.data");
+        const UserLog = require("./src/user/eaic.user.log");
+        const UserCompletedPaths = require('./src/user/eaic.user.completed_paths');
+        const UserMarkCompleted = require('./src/user/eaic.user.mark_completed');
+        const UserChangeUsername = require('./src/user/eaic.user.change.username');
+        const UserChangeProfileImage = require('./src/user/eaic.user.change.image');
+        const UserPreference = require('./src/user/eaic.user.preference');
 
-        const UserLikedCompletedPath = require('./eaic.completed_path.liked');
-        const CompletedPathsLike = require('./eaic.completed_paths.like')
+        const UserLikedCompletedPath = require('./src/completed_path/eaic.completed_path.liked');
+        const CompletedPathsLike = require('./src/completed_path/eaic.completed_paths.like')
 
-        const DownloadsToken = require('./eaic.downloads.token')
-        const DownloadsDownload = require('./eaic.downloads.download')
+        const DownloadsToken = require('./src/downloads/eaic.downloads.token')
+        const DownloadsDownload = require('./src/downloads/eaic.downloads.download')
 
         const EAICArea = require("./climb/area");
         const EAICZone = require("./climb/zone");
@@ -110,8 +85,6 @@ con.connect(function (error) {
         const EAICPath = require("./climb/path");
 
         const {EAICAreaUpdateChecker, EAICZoneUpdateChecker, EAICSectorUpdateChecker} = require("./climb/UpdateChecker");
-
-        const EAICInfo = require("./eaic.info");
 
         const credentials = fs.existsSync("/etc/apache2/ssl") ? {
             key: fs.readFileSync('/etc/apache2/ssl/arnyminerz_com.key', 'utf8'),
@@ -165,41 +138,22 @@ con.connect(function (error) {
         app.get("/user/friend/:uuid/:status", (req, res) => (new FriendAccept(messaging, con)).process(req, res));
         app.get("/user/search/:query", (req, res) => (new UserSearch(con)).process(req, res));
         app.get("/users", (req, res) => (new UsersList(con)).process(req, res))
-        app.get("/completed_paths/:id/like/:user", (req, res) => {
-            new CompletedPathsLike(con).process(req, res);
-        });
-        app.get("/completed_paths/:id/liked/:user", (req, res) => {
-            new UserLikedCompletedPath(con).process(req, res);
-        });
 
-        app.get("/downloads/token/:request", (req, res) => {
-            new DownloadsToken(con).process(req, res);
-        });
-        app.get("/download/:token", (req, res) => {
-            new DownloadsDownload(con).process(req, res);
-        });
-        app.get("/download/:token", (req, res) => {
-            new DownloadsDownload(con).process(req, res);
-        });
+        app.get("/completed_paths/:id/like/:user", (req, res) => (new CompletedPathsLike(con)).process(req, res));
+        app.get("/completed_paths/:id/liked/:user", (req, res) => (new UserLikedCompletedPath(con)).process(req, res));
 
-        app.get("/area/:area", (req, res) => {
-            new EAICArea(con).process(req, res);
-        });
-        app.get("/zone/:zone", (req, res) => {
-            new EAICZone(con).process(req, res);
-        });
-        app.get("/sector/:sector", (req, res) => {
-            new EAICSector(con).process(req, res);
-        });
-        app.get("/path/:path", (req, res) => {
-            new EAICPath(con).process(req, res);
-        });
+        app.get("/downloads/token/:request", (req, res) => (new DownloadsToken(con)).process(req, res));
+        app.get("/download/:token", (req, res) => (new DownloadsDownload(con)).process(req, res));
+        app.get("/download/:token", (req, res) => (new DownloadsDownload(con)).process(req, res));
+
+        app.get("/area/:area", (req, res) => (new EAICArea(con)).process(req, res));
+        app.get("/zone/:zone", (req, res) => (new EAICZone(con)).process(req, res));
+        app.get("/sector/:sector", (req, res) => (new EAICSector(con)).process(req, res));
+        app.get("/path/:path", (req, res) => (new EAICPath(con)).process(req, res));
 
         app.get("/update_available/area/:area", (req, res) => (new EAICAreaUpdateChecker(con)).process(req, res));
         app.get("/update_available/zone/:zone", (req, res) => (new EAICZoneUpdateChecker(con)).process(req, res));
         app.get("/update_available/sector/:sector", (req, res) => (new EAICSectorUpdateChecker(con)).process(req, res));
-
-        app.get("/info", (req, res) => (new EAICInfo(con)).process(req, res));
 
         app.get('*', (req, res) => {
             res.status(404).send('{"result":"error", "message":"The requested address doesn\'t exist"}')
@@ -212,7 +166,7 @@ con.connect(function (error) {
             console.log("  Server ready on http://localhost:" + httpPort)
         });
 
-        if (credentials != null) {
+        if (credentials !== undefined) {
             const httpsServer = https.createServer(credentials, app);
             console.log("Listening on " + httpsPort)
             httpsServer.listen(httpsPort, () => {
@@ -220,24 +174,5 @@ con.connect(function (error) {
                 console.log("  Server ready on https://localhost:" + httpsPort)
             });
         }
-
-        // This isn't required with the new downloads method
-        /*console.log("Scheduling downloads cache clear task")
-        setInterval(function () {
-            console.log("Clearing Downloads...");
-            http.request("http://escalaralcoiaicomtat.centrexcursionistalcoi.org/api/download_data/clear", function (response) {
-                let str = '';
-
-                response.on('data', function (chunk) {
-                    str += chunk;
-                });
-
-                response.on('end', function () {
-                    console.log("  Completed downloads clearing: ", str);
-                });
-            }).end();
-            console.log("Clearing cache...");
-            deleteFolderRecursive(path.join(__dirname, "cache"));
-        }, clearDownloadsCacheTime);*/
     }
 });

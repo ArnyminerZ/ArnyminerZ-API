@@ -1,4 +1,4 @@
-const {sendNotification} = require("./utils.firebase");
+const {sendNotification} = require("../utils/FirebaseUtils");
 
 module.exports = class FriendDelete {
     constructor(messaging, mysql) {
