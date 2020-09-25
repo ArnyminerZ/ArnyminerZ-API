@@ -2,6 +2,7 @@
   "name": "api-extended",
   "version": "1.0.0",
   "description": "",
+  "repository": "https://gitlab.arnyminerz.com/escalar-alcoia-i-comtat/api",
   "main": "index.js",
   "scripts": {
     "test": "echo \"ℹ No test script specified\"",
