@@ -21,8 +21,13 @@ MEASUREMENT_ID=
 MYSQL_HOST=
 MYSQL_USER=
 MYSQL_PASS=
+
+[other]
+HTTP_PORT=
+HTTPS_PORT=
+DISABLE_HTTPS=[true|false]
 ```
-You should fill the fields with the corresponding parameters.
+You should fill the fields with the corresponding parameters. All the parameters in `other` are optional.
 
 ### serviceAccountKey.json ###
 This contains the Firebase Admin credentials.
