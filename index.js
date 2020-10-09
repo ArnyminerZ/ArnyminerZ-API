@@ -8,8 +8,8 @@ require('./src/utils/FSUtils')
 const {Telegram} = require('./src/communication/Telegram')
 const telegram = new Telegram()
 
-const httpPort = 3000;
-const httpsPort = 3001;
+const httpPort = properties.get("other.HTTP_PORT") || 3000;
+const httpsPort = properties.get("other.HTTPS_PORT") || 3001;
 
 const mysql = require('mysql')
 const admin = require("firebase-admin");
@@ -181,7 +181,7 @@ con.connect(function (error) {
             await telegram.sendMessage('ℹ EAIC is listening http on ' + httpPort)
         });
 
-        if (credentials !== undefined && !process.env.ESCALAR_DISABLE_SSL) {
+        if (credentials !== undefined && !process.env.ESCALAR_DISABLE_SSL && !properties.get("other.DISABLE_HTTPS")) {
             console.log("🔁 Creating HTTPS Server...")
             const httpsServer = https.createServer(credentials, app);
             httpsServer.listen(httpsPort, async () => {
