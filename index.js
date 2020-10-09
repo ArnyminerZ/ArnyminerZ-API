@@ -133,34 +133,17 @@ con.connect(function (error) {
         const firebaseAuth = firebase.auth()
 
         console.log("🔁 Adding GET Listeners...")
-        const firebaseNotify = new FirebaseNotify(messaging)
-        const firebaseAuthenticate = new FirebaseAuthenticate(auth, con)
-        const firebaseLogin = new FirebaseAuthenticate(auth, con)
-        const firebaseLoginGoogle = new FirebaseLoginGoogle(firebaseAuth)
-        app.get("/firebase/notify", (req, res) => firebaseNotify.process(req, res));
-        app.get("/firebase/authenticate", (req, res) => firebaseAuthenticate.process(req, res));
-        app.get("/firebase/login", (req, res) => firebaseLogin.process(req, res));
+        app.get("/firebase/notify", (req, res) => (new FirebaseNotify(messaging)).process(req, res));
+        app.get("/firebase/authenticate", (req, res) => (new FirebaseAuthenticate(auth, con)).process(req, res));
+        app.get("/firebase/login", (req, res) => (new FirebaseAuthenticate(auth, con)).process(req, res));
+        app.get("/firebase/google_login", (req, res) => (new FirebaseLoginGoogle(firebaseAuth)).process(req, res));
 
-        app.get("/firebase/google_login", (req, res) => firebaseLoginGoogle.process(req, res));
-
-        app.get("/user/:user", (req, res) => {
-            new UserData(con, auth).process(req, res);
-        });
-        app.get("/user/:user/log", (req, res) => {
-            new UserLog(con).process(req, res);
-        });
-        app.get("/user/:user/friend/request/:other", (req, res) => {
-            new FriendRequest(messaging, con).process(req, res);
-        });
-        app.get("/user/:user/friend/delete/:other", (req, res) => {
-            new FriendDelete(messaging, con).process(req, res);
-        });
-        app.get("/user/:user/friend/requests", (req, res) => {
-            new FriendRequests(con).process(req, res);
-        });
-        app.get("/user/:user/friend_with/:other", (req, res) => {
-            new FriendWith(con).process(req, res);
-        });
+        app.get("/user/:user", (req, res) => (new UserData(con, auth).process(req, res)));
+        app.get("/user/:user/log", (req, res) => (new UserLog(con).process(req, res)));
+        app.get("/user/:user/friend/request/:other", (req, res) => (new FriendRequest(messaging, con).process(req, res)));
+        app.get("/user/:user/friend/delete/:other", (req, res) => (new FriendDelete(messaging, con).process(req, res)));
+        app.get("/user/:user/friend/requests", (req, res) => (new FriendRequests(con).process(req, res)));
+        app.get("/user/:user/friend_with/:other", (req, res) => (new FriendWith(con).process(req, res)));
         app.get("/user/:user/friends", (req, res) => (new Friends(con)).process(req, res));
         app.get("/user/:user/mark_completed/:path", (req, res) => (new UserMarkCompleted(con)).process(req, res));
         app.get("/user/:user/completed_paths", (req, res) => (new UserCompletedPaths(con)).process(req, res));
@@ -198,7 +181,7 @@ con.connect(function (error) {
             await telegram.sendMessage('ℹ EAIC is listening http on ' + httpPort)
         });
 
-        if (credentials !== undefined) {
+        if (credentials !== undefined && !process.env.ESCALAR_DISABLE_SSL) {
             console.log("🔁 Creating HTTPS Server...")
             const httpsServer = https.createServer(credentials, app);
             httpsServer.listen(httpsPort, async () => {
