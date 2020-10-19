@@ -70,9 +70,12 @@ class User {
      * @param newAddress {String} The new profile image address
      * @return {Promise<object>} The query
      */
-    updateImage(newAddress) {
+    async updateImage(newAddress) {
         const updateSql = "UPDATE `ArnyminerZ`.`users` SET `profileImage`='{0}' WHERE `id`=UNHEX(REPLACE('{1}','-',''));"
             .format(newAddress, this.id)
+        // TODO: Only update stored data if successfully updated db
+        this.profileImage = newAddress
+        this.dataClass.profileImage = newAddress
         return mysql.query(this.conn, updateSql)
     }
 
@@ -143,7 +146,7 @@ module.exports = {
     /**
      * Loads the data of a user
      * @param {Connection} conn The connected MySQL session
-     * @param {Number|string} userId The id or firebase_uid of the user to load
+     * @param {string} userId The id or firebase_uid of the user to load
      * @param {{date: Date, salt: String, userId: Number, hash: String, iterations: Number}} token The token of the user
      * @return {User|null} May return null if the user was not found
      */
