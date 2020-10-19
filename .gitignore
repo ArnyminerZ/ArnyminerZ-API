@@ -11,6 +11,8 @@ serviceAccountKey.json
 api.ini
 google_key.json
 .listeners.json
+.tokens.json
+.env
 
 # Some scripts exlusions
 deployment
