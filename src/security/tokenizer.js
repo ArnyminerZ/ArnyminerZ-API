@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 const fs = require('fs')
 
-const _TOKENS_PATH = process.env.TOKENS_PATH || '_tokens.json';
+const _TOKENS_PATH = process.env.TOKENS_PATH || '.tokens.json';
 const EFFICIENT_TOKEN_STORAGE = process.env.TOKEN_STORAGE_EFFICIENT || true;
 const TOKEN_EXPIRATION_TIME = process.env.TOKEN_EXPIRATION_TIME || (10 * 60 * 1000);
 
