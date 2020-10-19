@@ -1,6 +1,49 @@
 # Escalar Alcoià i Comtat #
 ## Environment variables ##
-`TELEGRAM_TOKEN` should be set matching the token of the Telegram bot from [@BotFather](https://telegram.me/BotFather)
+### `TELEGRAM_TOKEN` 
+Should be set matching the token of the Telegram bot from [@BotFather](https://telegram.me/BotFather)
+
+### `TOKEN_EXPIRATION_TIME`
+This is the time in milliseconds that will take a login token to expire.
+
+On other words, the amount of time the user will be connected until it's required to input its password again, if the "Remember Me" field is not checked.
+
+*Default: `600000` (10 minutes x 60 seconds x 1000ms)*
+### `TOKEN_LONG_MULTIPLIER`
+This is a number that will be multiplied to `TOKEN_EXPIRATION_TIME` if the "Remember Me" checkbox is marked.
+
+*Default: `6` (Default 10 minutes\*6=1 hour)*
+### `TOKEN_STORAGE_EFFICIENT`
+If `true`, a token will be removed when expired. This will only apply if it's tried to get the token.
+
+*Default: `true`*
+### `TOKENS_PATH`
+The path relative to the project folder on where to store the tokens JSON file. Must end with `.json` and not be a directory.
+
+*Default: `_tokens.json`*
+
+### `MAX_PEOPLE_PER_BOOKING`
+The maximum amount of people that will be allowed per booking.
+
+*Default: `5`*
+
+### `SMTP_HOST`
+The SMTP host for sending emails
+
+### `SMTP_PORT`
+The SMTP port for sending emails
+
+### `SMTP_USER`
+The SMTP user for sending emails
+
+### `SMTP_PASS`
+The SMTP pass for sending emails
+
+### `HTTP_PORT`
+The port that will be used for HTTP requests.
+
+*Default: `3002`*
+
 
 ## Required files ##
 The source installation dir should contain the following files:
