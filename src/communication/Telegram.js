@@ -35,6 +35,9 @@ module.exports = {
         }
 
         async sendMessage(message){
+            if (!this.isTokenSet)
+                return
+
             const readListeners =
                 fs.existsSync('.listeners.json') ?
                     fs.readFileSync('.listeners.json', 'utf8') :
