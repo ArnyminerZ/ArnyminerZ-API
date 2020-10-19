@@ -1,40 +1,44 @@
+const {querySync} = require('../utils/mysql-sync')
+
 module.exports = class UsersList {
     constructor(mysql) {
         this.mysql = mysql
     }
 
-    process(request, response) {
-        const params = request.params;
+    async process(request, response) {
+        const sql = "SELECT * FROM `ArnyminerZ`.`users`;";
 
-        const sql = "SELECT * FROM `EscalarAlcoiaIComtat`.`users`;"
-            .format(`${params.query}`);
+        try {
+            const result = await querySync(this.mysql, sql)
 
-        this.mysql.query(sql, function (error, result) {
-            if (error)
-                response.status(500).send({error: error});
-            else {
-                let resultDataBuilder = [];
-                for (const i in result)
-                    if (result.hasOwnProperty(i)) {
-                        const item = result[i];
-                        let r = {
-                            id: item["id"],
-                            timestamp: item["timestamp"],
-                            uid: item["uid"],
-                            role: item["role"],
-                            username: item["username"],
-                            email: item["email"],
-                            born_date: item["born_date"],
-                            pref_completedPublic: item["pref_completedPublic"],
-                            pref_profilePhotoPublic: item["pref_profilePhotoPublic"],
-                            pref_friendsPublic: item["pref_friendsPublic"]
-                        };
-                        if (item["pref_profilePhotoPublic"] === 1)
-                            r["profileImage"] = item["profileImage"];
-                        resultDataBuilder.push(r);
-                    }
-                response.status(200).send({result: "ok", data: resultDataBuilder})
-            }
-        })
+            let resultDataBuilder = [];
+            for (const i in result)
+                if (result.hasOwnProperty(i)) {
+                    const item = result[i];
+                    const preferences = JSON.parse(item["preferences"] || "{}")
+                    const completedPublic = preferences["completedPublic"]
+                    const profilePhotoPublic = preferences["profilePhotoPublic"]
+                    const friendsPublic = preferences["friendsPublic"]
+                    let r = {
+                        id: item["id"],
+                        timestamp: item["timestamp"],
+                        uid: item["uid"],
+                        role: item["role"],
+                        username: item["username"],
+                        email: item["email"],
+                        born_date: item["born_date"],
+                        preferences: preferences,
+                        pref_completedPublic: completedPublic,
+                        pref_profilePhotoPublic: profilePhotoPublic,
+                        pref_friendsPublic: friendsPublic
+                    };
+                    if (item["pref_profilePhotoPublic"] === 1)
+                        r["profileImage"] = item["profileImage"];
+                    resultDataBuilder.push(r);
+                }
+            response.status(200).send({result: "ok", data: resultDataBuilder})
+        } catch (error) {
+            response.status(500).send({error: error});
+        }
     }
 }
