@@ -10,12 +10,9 @@ class User {
      * Initializes the User class
      * @param {Connection} conn The connected MySQL session
      * @param {object} dataClass The data class loaded from the MySQL server
-     * @param {{date: Date, salt: String, userId: Number, hash: String, iterations: Number}} token The token of the user
      */
-    constructor(conn, dataClass, token) {
+    constructor(conn, dataClass) {
         this.conn = conn;
-
-        this.token = token;
 
         this.dataClass = dataClass
         this.id = dataClass.id
@@ -25,50 +22,6 @@ class User {
         this.username = dataClass.username
         this.profileImage = dataClass.profileImage
         this.birthDate = dataClass.birthDate
-    }
-
-    /**
-     * Fills the content variable with user data. All keys are "{{user-<field>}}"
-     * @param {String} content The content with placeholders to complete
-     * @return {String} The content with replaced placeholders
-     */
-    async format(content) {
-        for (const k in this.dataClass)
-            if (this.dataClass.hasOwnProperty(k))
-                content = content.replace(new RegExp(`{{user-${k}}}`, "gm"), this.dataClass[k])
-
-        const formatMeta = (meta) => {
-            let builder = {}
-            for (const m in meta)
-                if (meta.hasOwnProperty(m)) {
-                    const val = meta[m]
-                    if (typeof val === "object") {
-                        const vals = formatMeta(val)
-                        for (const k in vals)
-                            if (vals.hasOwnProperty(k))
-                                builder[m + "-" + k] = vals[k]
-                    } else
-                        builder[m] = val
-                }
-            return builder
-        }
-
-        const meta = JSON.parse(this.dataClass.meta)
-        const formattedMeta = formatMeta(meta)
-        for (const m in formattedMeta)
-            if (formattedMeta.hasOwnProperty(m))
-                content = content.replace(new RegExp(`{{meta-${m}}}`, "gm"), formattedMeta[m])
-
-        const permissions = await this.getPermissions()
-        for (const p in permissions)
-            if (permissions.hasOwnProperty(p))
-                content = content.replace(new RegExp(`{{perm-${permissions[p]}}}`, "gm"), 'true')
-
-        const date = new Date(this.token.date)
-        const timeDiff = date.getTime() + tokenizer.TOKEN_EXPIRATION_TIME
-        content = content.replace(new RegExp('{{user-endtime}}', "gm"), (new Date(timeDiff)).toUTCString())
-
-        return content
     }
 
     /**
@@ -186,13 +139,13 @@ module.exports = {
      * @param {{date: Date, salt: String, userId: Number, hash: String, iterations: Number}} token The token of the user
      * @return {User|null} May return null if the user was not found
      */
-    loadUser: async (conn, userId, token) => {
+    loadUser: async (conn, userId) => {
         const idSql = `SELECT * FROM \`ArnyminerZ\`.\`users\` WHERE \`id\`=UNHEX(REPLACE('${userId}','-',''))`
         const idResult = await mysql.query(conn, idSql)
         if (idResult.length > 0) {
             const data = idResult[0]
             data.id = uuid.stringify(data.id)
-            return new User(conn, data, token)
+            return new User(conn, data)
         }
 
         const firebaseSql = "SELECT * FROM `ArnyminerZ`.`users` WHERE `firebase_uid`='{0}';"
@@ -201,7 +154,7 @@ module.exports = {
         if (firebaseResult.length > 0) {
             const data = firebaseResult[0]
             data.id = uuid.stringify(data.id)
-            return new User(conn, data, token)
+            return new User(conn, data)
         }
 
         return null
