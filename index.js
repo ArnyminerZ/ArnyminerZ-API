@@ -260,7 +260,7 @@ con.connect(function (error) {
         const httpServer = http.createServer(app)
         httpServer.listen(httpPort, async () => {
             console.log("✅  Server ready on http://localhost:" + httpPort)
-            await telegram.sendMessage('ℹ EAIC is listening http on ' + httpPort)
+            await telegram.sendMessage('ℹ ArnyminerZ API is listening http on ' + httpPort)
         });
 
         if (credentials !== undefined && !process.env.ESCALAR_DISABLE_SSL && !properties.get("other.DISABLE_HTTPS")) {
@@ -268,7 +268,7 @@ con.connect(function (error) {
             const httpsServer = https.createServer(credentials, app);
             httpsServer.listen(httpsPort, async () => {
                 console.log("✅  Server ready on http://localhost:" + httpsPort)
-                await telegram.sendMessage('ℹ EAIC is listening https on ' + httpsPort)
+                await telegram.sendMessage('ℹ ArnyminerZ API is listening https on ' + httpsPort)
             });
         }
     }
