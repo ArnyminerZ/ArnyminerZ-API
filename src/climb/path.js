@@ -1,4 +1,4 @@
-const mysqlSync = require('../extras/mysql-sync')
+const mysqlSync = require('../utils/mysql-sync')
 
 module.exports =
     class EAICPath {

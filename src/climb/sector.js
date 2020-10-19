@@ -1,4 +1,4 @@
-const mysqlSync = require('../extras/mysql-sync')
+const mysqlSync = require('../utils/mysql-sync')
 
 function serialize(object) {
     return JSON.parse(JSON.stringify(object))
