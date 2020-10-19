@@ -28,7 +28,7 @@ module.exports = {
 
                     fs.writeFileSync('.listeners.json', JSON.stringify(listeners))
 
-                    await this.telegramBot.sendMessage(chatId, `✅ Added you to the listeners for EAIC`)
+                    await this.telegramBot.sendMessage(chatId, `✅ Added you to the listeners for ArnyminerZ API`)
                 });
                 console.log("✅ Telegram Bot ready!")
             }
