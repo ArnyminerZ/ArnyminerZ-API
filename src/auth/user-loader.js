@@ -25,6 +25,14 @@ class User {
     }
 
     /**
+     * Serializes the class's data into a string
+     * @return {string} The serialized data
+     */
+    stringify() {
+        return JSON.stringify(this.dataClass)
+    }
+
+    /**
      * Checks if the user has permission to access a section
      * @param {string} sectionName The name of the section
      * @return {Promise<boolean>} If the user has permission to access the section
