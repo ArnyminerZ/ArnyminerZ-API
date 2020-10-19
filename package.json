@@ -13,13 +13,16 @@
   "author": "ArnyminerZ",
   "license": "ISC",
   "dependencies": {
+    "@sentry/node": "^5.25.0",
+    "@sentry/tracing": "^5.25.0",
     "archiver": "^4.0.1",
     "cabin": "^6.1.4",
     "download-file-sync": "^1.0.4",
     "firebase": "^7.15.1",
     "firebase-admin": "^8.12.1",
     "he": "^1.2.0",
-    "node-telegram-bot-api": "^0.50.0"
+    "node-telegram-bot-api": "^0.50.0",
+    "googleapis": "^61.0.0"
   },
   "devDependencies": {
     "body-parser": "^1.19.0",
