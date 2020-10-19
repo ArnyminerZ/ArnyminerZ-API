@@ -1,4 +1,4 @@
-const {getUser} = require('../utils/user-utils')
+const {loadUser} = require('../auth/user-loader')
 
 module.exports = class UserData {
     constructor(mysql) {
@@ -10,7 +10,7 @@ module.exports = class UserData {
         const mysql = this.mysql;
 
         try {
-            const user = await getUser(mysql, params.user)
+            const user = await loadUser(mysql, params.user)
             if (user == null)
                 response.status(400).send({error: "user_not_found"})
             else

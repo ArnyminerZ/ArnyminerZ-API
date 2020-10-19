@@ -1,4 +1,4 @@
-const {getUser} = require('../utils/user-utils')
+const {loadUser} = require('../auth/user-loader')
 const {query} = require('../utils/mysql-sync')
 
 module.exports = class UserChangeProfileImage {
@@ -18,7 +18,7 @@ module.exports = class UserChangeProfileImage {
         } else {
             try {
                 // First check if user exists and get data
-                const user = await getUser(mysql, params.user)
+                const user = await loadUser(mysql, params.user)
                 if (user == null)
                     response.status(400).send({error: "user_not_found"})
 

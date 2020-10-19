@@ -1,5 +1,5 @@
 const {query} = require('../utils/mysql-sync')
-const {getUser} = require('../utils/user-utils')
+const {loadUser} = require('../auth/user-loader')
 
 module.exports = class FriendRequests {
     constructor(mysql) {
@@ -15,7 +15,7 @@ module.exports = class FriendRequests {
 
         try {
             // First check if user exists
-            const user = await getUser(mysql, params.user)
+            const user = await loadUser(mysql, params.user)
             if (user == null)
                 return response.status(400).send({error: 'user-doesnt-exist'});
 
@@ -29,8 +29,8 @@ module.exports = class FriendRequests {
                 for (const r in requests)
                     if (requests.hasOwnProperty(r)) {
                         const request = requests[r]
-                        const caller = await getUser(mysql, request.from_user_id) || await getUser(mysql, request.from_user)
-                        const called = await getUser(mysql, request.to_user_id) || await getUser(mysql, request.to_user)
+                        const caller = await loadUser(mysql, request.from_user_id) || await loadUser(mysql, request.from_user)
+                        const called = await loadUser(mysql, request.to_user_id) || await loadUser(mysql, request.to_user)
                         request["user"] = JSON.parse(JSON.stringify(caller))
                         request["requested_user"] = JSON.parse(JSON.stringify(called))
                         builder.push(request)

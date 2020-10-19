@@ -2,7 +2,7 @@ const {v4: uuidv4} = require('uuid');
 
 const {sendNotification} = require("../utils/FirebaseUtils");
 const {query} = require('../utils/mysql-sync')
-const {findUser} = require('../utils/user-utils')
+const {loadUser} = require('../auth/user-loader')
 
 module.exports = class FriendRequest {
     constructor(messaging, mysql) {
@@ -22,12 +22,12 @@ module.exports = class FriendRequest {
         const requestSql = "INSERT INTO `EscalarAlcoiaIComtat`.`friend_requests` (uuid, from_user_id, to_user_id, remote_address, agent) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}');"
         try {
             // First check if caller exists
-            const caller = await findUser(mysql, params.user)
+            const caller = await loadUser(mysql, params.user)
             if (caller == null)
                 return response.status(400).send({error: 'user-doesnt-exist'});
 
             // Then, check if called exists
-            const called = await findUser(mysql, params.other)
+            const called = await loadUser(mysql, params.other)
             if (called == null)
                 return response.status(400).send({error: 'friend-doesnt-exist'});
 
