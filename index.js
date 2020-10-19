@@ -43,7 +43,7 @@ process.on('SIGUSR2', async () => {
 });
 process.on('uncaughtException', async (e) => {
     await telegram.sendMessage('🛑 EAIC Had an uncontrolled exception. Log:')
-    await telegram.sendMessage(e)
+    await telegram.sendMessage(JSON.stringify(e))
     console.error("🛑 Had uncontrolled exception!", e)
 });
 
