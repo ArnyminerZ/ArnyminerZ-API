@@ -1,8 +1,9 @@
 // #!/usr/bin/env node
 const propertiesReader = require('properties-reader');
 const properties = propertiesReader('./eaic.ini');
+require('dotenv').config()
 
-require('./src/utils/StringUtils')
+require('./src/utils/string-utils')
 require('./src/utils/FSUtils')
 
 const {Telegram} = require('./src/communication/Telegram')
@@ -22,27 +23,27 @@ const Sentry = require('@sentry/node');
 const Tracing = require("@sentry/tracing");
 
 process.on('exit', async () => {
-    await telegram.sendMessage('🛑 EAIC process was exited.')
+    await telegram.sendMessage('🛑 ArnyminerZ API process was exited.')
     console.warn("⚠ Process was exited")
     process.exit()
 })
 process.on('SIGINT', async () => {
-    await telegram.sendMessage('🛑 EAIC Forced close with Ctrl-C')
+    await telegram.sendMessage('🛑 ArnyminerZ API Forced close with Ctrl-C')
     console.warn("⚠ Forced close with Ctrl-C")
     process.exit()
 });
 process.on('SIGUSR1', async () => {
-    await telegram.sendMessage('🛑 EAIC Forced close with SIGUSR1')
+    await telegram.sendMessage('🛑 ArnyminerZ API Forced close with SIGUSR1')
     console.warn("⚠ Forced close SIGUSR1")
     process.exit()
 });
 process.on('SIGUSR2', async () => {
-    await telegram.sendMessage('🛑 EAIC Forced close with SIGUSR2')
+    await telegram.sendMessage('🛑 ArnyminerZ API Forced close with SIGUSR2')
     console.warn("⚠ Forced close SIGUSR2")
     process.exit()
 });
 process.on('uncaughtException', async (e) => {
-    await telegram.sendMessage('🛑 EAIC Had an uncontrolled exception. Log:')
+    await telegram.sendMessage('🛑 ArnyminerZ API Had an uncontrolled exception. Log:')
     await telegram.sendMessage(JSON.stringify(e))
     console.error("🛑 Had uncontrolled exception!", e)
 });
@@ -106,6 +107,15 @@ con.connect(function (error) {
         const UserChangeUsername = require('./src/user/eaic.user.change.username');
         const UserChangeProfileImage = require('./src/user/eaic.user.change.image');
         const UserPreference = require('./src/user/eaic.user.preference');
+
+        const {processLogin} = require('./src/auth/login')
+        const {processCreatePassword, processConfirmPassword} = require('./src/auth/management')
+        const {processAvatarChange, processDataChange} = require('./src/auth/profile')
+
+        const {processLaNauProfileDataChange} = require('./src/lanau/profile/data')
+        const {processLaNauBookCreation} = require('./src/lanau/book/creation')
+        const {processLaNauBookCheckAvailable} = require('./src/lanau/book/utils')
+        const {processLaNauBookDelete, processLaNauBookEditable, processLaNauBookQuery, processLaNauBookUpdate} = require('./src/lanau/book/management')
 
         const UserLikedCompletedPath = require('./src/completed_path/eaic.completed_path.liked');
         const CompletedPathsLike = require('./src/completed_path/eaic.completed_paths.like')
@@ -191,6 +201,20 @@ con.connect(function (error) {
         app.get('*', (req, res) => {
             res.status(404).send('{"result":"error", "message":"The requested address doesn\'t exist"}')
         }) // Handles 404 since it's the last get
+
+        console.log("🔁 Adding POST listeners...")
+        app.post('/login', (q, r) => processLogin(q, r, con))
+        app.post('/create-password', (q, r) => processCreatePassword(q, r, con))
+        app.post('/confirm-password', (q, r) => processConfirmPassword(q, r, con))
+        app.post('/profile/avatar', (q, r) => processAvatarChange(q, r, con))
+        app.post('/profile/data', (q, r) => processDataChange(q, r, con))
+        app.post('/profile/lanau-data', (q, r) => processLaNauProfileDataChange(q, r, con))
+        app.post('/lanau/book', (q, r) => processLaNauBookCreation(q, r, con))
+        app.post('/lanau/book/check_availability', (q, r) => processLaNauBookCheckAvailable(q, r, con))
+        app.post('/lanau/book/:id', (q, r) => processLaNauBookQuery(q, r, con))
+        app.post('/lanau/book/:id/delete', (q, r) => processLaNauBookDelete(q, r, con))
+        app.post('/lanau/book/:id/editable', (q, r) => processLaNauBookEditable(q, r, con))
+        app.post('/lanau/book/:id/update', (q, r) => processLaNauBookUpdate(q, r, con))
 
         console.log("🔁 Creating HTTP Server...")
         const httpServer = http.createServer(app)
