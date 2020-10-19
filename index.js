@@ -22,6 +22,8 @@ const fs = require('fs');
 const Sentry = require('@sentry/node');
 const Tracing = require("@sentry/tracing");
 
+//<editor-fold desc=">> Error handlers">
+console.log("🔁 Adding error handlers...")
 process.on('exit', async () => {
     await telegram.sendMessage('🛑 ArnyminerZ API process was exited.')
     console.warn("⚠ Process was exited")
@@ -47,6 +49,44 @@ process.on('uncaughtException', async (e) => {
     await telegram.sendMessage(JSON.stringify(e))
     console.error("🛑 Had uncontrolled exception!", e)
 });
+//</editor-fold>
+
+//<editor-fold desc=">> Set the default value for some variables">
+if (!process.env.MAX_PEOPLE_PER_BOOKING)
+    process.env.MAX_PEOPLE_PER_BOOKING = properties.get('lanau.MAX_PEOPLE_PER_BOOKING') || '5';
+
+if (!process.env.TOKEN_EXPIRATION_TIME)
+    process.env.TOKEN_EXPIRATION_TIME = properties.get('token.TOKEN_EXPIRATION_TIME') || 600000;
+if (!process.env.TOKEN_LONG_MULTIPLIER)
+    process.env.TOKEN_LONG_MULTIPLIER = properties.get('token.TOKEN_LONG_MULTIPLIER') || 6;
+if (!process.env.TOKEN_STORAGE_EFFICIENT)
+    process.env.TOKEN_STORAGE_EFFICIENT = properties.get('token.TOKEN_STORAGE_EFFICIENT') || true;
+if (!process.env.TOKENS_PATH)
+    process.env.TOKENS_PATH = properties.get('token.TOKENS_PATH') || '_tokens.json';
+//</editor-fold>
+
+//<editor-fold desc=">> Environment variables check">
+console.log("🔁 Checking for required environment variables...")
+let error = 0;
+if (process.env.SMTP_HOST == null) {
+    console.log("🛑 Missing SMTP_HOST variable")
+    error = 1;
+}
+if (process.env.SMTP_PORT == null) {
+    console.log("🛑 Missing SMTP_PORT variable")
+    error = 1;
+}
+if (process.env.SMTP_USER == null) {
+    console.log("🛑 Missing SMTP_USER variable")
+    error = 1;
+}
+if (process.env.SMTP_PASS == null) {
+    console.log("🛑 Missing SMTP_PASS variable")
+    error = 1;
+}
+if (error > 0)
+    process.exit(1)
+//</editor-fold>
 
 console.log("🔌 Connecting mysql...");
 const con = mysql.createConnection({
