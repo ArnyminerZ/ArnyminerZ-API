@@ -146,7 +146,6 @@ con.connect(function (error) {
         const UserMarkCompleted = require('./src/user/eaic.user.mark_completed');
         const UserChangeUsername = require('./src/user/eaic.user.change.username');
         const UserChangeProfileImage = require('./src/user/eaic.user.change.image');
-        const UserPreference = require('./src/user/eaic.user.preference');
 
         const {processLogin} = require('./src/auth/login')
         const {processCreatePassword, processConfirmPassword} = require('./src/auth/management')
@@ -207,7 +206,7 @@ con.connect(function (error) {
         app.get("/firebase/query", (req, res) => (new FirebaseQuery(auth, con)).process(req, res));
 
         app.get("/user/:user", (req, res) => (new UserData(con).process(req, res)));
-        app.get("/user/:user/log", (req, res) => (new UserLog(con).process(req, res)));
+        app.get("/user/:user/log", (req, res) => (new UserLog(con).process(req, res))); // TODO: Wtf is this?
         app.get("/user/:user/friend/request/:other", (req, res) => (new FriendRequest(messaging, con).process(req, res)));
         app.get("/user/:user/friend/delete/:other", (req, res) => (new FriendDelete(messaging, con).process(req, res)));
         app.get("/user/:user/friend/requests", (req, res) => (new FriendRequests(con).process(req, res)));
@@ -217,7 +216,6 @@ con.connect(function (error) {
         app.get("/user/:user/completed_paths", (req, res) => (new UserCompletedPaths(con)).process(req, res));
         app.get("/user/:user/change_username/:new_username", (req, res) => (new UserChangeUsername(con, auth)).process(req, res));
         app.get("/user/:user/change_image", (req, res) => (new UserChangeProfileImage(con, auth)).process(req, res));
-        app.get("/user/:user/config/:preference/:value", (req, res) => (new UserPreference(con)).process(req, res));
         app.get("/user/friend/:uuid/:status", (req, res) => (new FriendAccept(messaging, con)).process(req, res));
         app.get("/user/search/:query", (req, res) => (new UserSearch(con)).process(req, res));
         app.get("/users", (req, res) => (new UsersList(con)).process(req, res))
