@@ -61,7 +61,7 @@ module.exports = {
             return res.status(500).send(e)
         }
     },
-    processLaNauBookEditable: async (req, res) => {
+    processLaNauBookEditable: async (req, res, con) => {
         const params = req.params;
 
         try {

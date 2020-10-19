@@ -1,3 +1,5 @@
+const {checkAvailability, AvailabilityCheckResult} = require('./booking-loader')
+
 module.exports = {
     processLaNauBookCheckAvailable: async (req, res, con) => {
         const body = req.body;
