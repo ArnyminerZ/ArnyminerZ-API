@@ -18,6 +18,9 @@ require("firebase/auth");
 
 const fs = require('fs');
 
+const Sentry = require('@sentry/node');
+const Tracing = require("@sentry/tracing");
+
 process.on('exit', async () => {
     await telegram.sendMessage('🛑 EAIC process was exited.')
     console.warn("⚠ Process was exited")
@@ -85,7 +88,7 @@ con.connect(function (error) {
         console.log("🔁 Setting Up Classes...")
         const FirebaseAuthenticate = require("./src/firebase/firebase.authenticate");
         const FirebaseNotify = require("./src/firebase/firebase.notify");
-        const FirebaseLoginGoogle = require("./src/firebase/firebase.login.google");
+        const FirebaseQuery = require("./src/firebase/firebase.query");
 
         const FriendRequest = require("./src/user/eaic.user.friend.request");
         const FriendDelete = require("./src/user/eaic.user.friend.delete");
@@ -110,12 +113,12 @@ con.connect(function (error) {
         const DownloadsToken = require('./src/downloads/eaic.downloads.token')
         const DownloadsDownload = require('./src/downloads/eaic.downloads.download')
 
-        const EAICArea = require("./climb/area");
-        const EAICZone = require("./climb/zone");
-        const EAICSector = require("./climb/sector");
-        const EAICPath = require("./climb/path");
+        const EAICArea = require("./src/climb/area");
+        const EAICZone = require("./src/climb/zone");
+        const EAICSector = require("./src/climb/sector");
+        const EAICPath = require("./src/climb/path");
 
-        const {EAICAreaUpdateChecker, EAICZoneUpdateChecker, EAICSectorUpdateChecker} = require("./climb/UpdateChecker");
+        const {EAICAreaUpdateChecker, EAICZoneUpdateChecker, EAICSectorUpdateChecker} = require("./src/climb/UpdateChecker");
 
         const credentials = fs.existsSync("/etc/apache2/ssl") ? {
             key: fs.readFileSync('/etc/apache2/ssl/arnyminerz_com.key', 'utf8'),
@@ -125,20 +128,35 @@ con.connect(function (error) {
 
         const app = express();
 
+        Sentry.init({
+            dsn: "https://75ebb4278af44f57a2be1cadfcf2dbe1@o459660.ingest.sentry.io/5459152",
+            integrations: [
+                // enable HTTP calls tracing
+                new Sentry.Integrations.Http({tracing: true}),
+                // enable Express.js middleware tracing
+                new Tracing.Integrations.Express({app}),
+            ],
+
+            // We recommend adjusting this value in production, or using tracesSampler
+            // for finer control
+            tracesSampleRate: 1.0,
+        });
+
+        app.use(Sentry.Handlers.requestHandler());
+        app.use(Sentry.Handlers.tracingHandler());
+        app.use(Sentry.Handlers.errorHandler());
         app.use(myParser.urlencoded({extended: true}));
         app.use(cors())
 
         const messaging = admin.messaging()
         const auth = admin.auth()
-        const firebaseAuth = firebase.auth()
 
         console.log("🔁 Adding GET Listeners...")
         app.get("/firebase/notify", (req, res) => (new FirebaseNotify(messaging)).process(req, res));
         app.get("/firebase/authenticate", (req, res) => (new FirebaseAuthenticate(auth, con)).process(req, res));
-        app.get("/firebase/login", (req, res) => (new FirebaseAuthenticate(auth, con)).process(req, res));
-        app.get("/firebase/google_login", (req, res) => (new FirebaseLoginGoogle(firebaseAuth)).process(req, res));
+        app.get("/firebase/query", (req, res) => (new FirebaseQuery(auth, con)).process(req, res));
 
-        app.get("/user/:user", (req, res) => (new UserData(con, auth).process(req, res)));
+        app.get("/user/:user", (req, res) => (new UserData(con).process(req, res)));
         app.get("/user/:user/log", (req, res) => (new UserLog(con).process(req, res)));
         app.get("/user/:user/friend/request/:other", (req, res) => (new FriendRequest(messaging, con).process(req, res)));
         app.get("/user/:user/friend/delete/:other", (req, res) => (new FriendDelete(messaging, con).process(req, res)));
