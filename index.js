@@ -91,6 +91,7 @@ if (error > 0)
 console.log("🔌 Connecting mysql...");
 const con = mysql.createConnection({
     host: properties.get('mysql.MYSQL_HOST'),
+    port: properties.get('mysql.MYSQL_PORT'),
     user: properties.get('mysql.MYSQL_USER'),
     password: properties.get('mysql.MYSQL_PASS')
 });
