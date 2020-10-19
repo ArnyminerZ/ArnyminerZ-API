@@ -1,5 +1,5 @@
-const {querySync} = require('../utils/mysql-sync')
-const {getUser} = require('../utils/UserUtils')
+const {query} = require('../utils/mysql-sync')
+const {getUser} = require('../utils/user-utils')
 
 module.exports = class FriendRequests {
     constructor(mysql) {
@@ -19,9 +19,9 @@ module.exports = class FriendRequests {
             if (user == null)
                 return response.status(400).send({error: 'user-doesnt-exist'});
 
-            let requests = await querySync(mysql, userIdSql.format(user.id))
+            let requests = await query(mysql, userIdSql.format(user.id))
             if (requests.length <= 0)
-                requests = await querySync(mysql, userFirebaseSql.format(user.firebase_uid))
+                requests = await query(mysql, userFirebaseSql.format(user.firebase_uid))
             if (requests.length <= 0) // If user has no requests
                 return response.send({result: 'ok', data: []})
             else {

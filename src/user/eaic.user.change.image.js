@@ -1,5 +1,5 @@
-const {getUser} = require('../utils/UserUtils')
-const {querySync} = require('../utils/mysql-sync')
+const {getUser} = require('../utils/user-utils')
+const {query} = require('../utils/mysql-sync')
 
 module.exports = class UserChangeProfileImage {
     constructor(mysql, auth) {
@@ -25,7 +25,7 @@ module.exports = class UserChangeProfileImage {
                 const sql = "UPDATE `ArnyminerZ`.`users` SET `profileImage`='{0}' WHERE `id`='{1}';"
                     .format(query.url, user.id);
 
-                const result = await querySync(mysql, sql)
+                const result = await query(mysql, sql)
                 const userRecord = await auth.updateUser(params.user, {photoURL: query.url})
                 response.status(200).send({result: "ok", data: result, userRecord: userRecord})
             } catch (e) {

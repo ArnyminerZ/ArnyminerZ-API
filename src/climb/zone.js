@@ -18,17 +18,17 @@ module.exports = class EAICZone {
         else try {
             const zoneSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_zones` WHERE `id`='{0}';"
                 .format(params.zone);
-            const zone = (await mysqlSync.querySync(mysql, zoneSql))[0];
+            const zone = (await mysqlSync.query(mysql, zoneSql))[0];
             zone["sectors"] = [];
             const sectorSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_sectors` WHERE `climbing_zone`='{0}';"
                 .format(zone.id);
-            const sectors = await mysqlSync.querySync(mysql, sectorSql);
+            const sectors = await mysqlSync.query(mysql, sectorSql);
             for (const s in sectors)
                 if (sectors.hasOwnProperty(s)) {
                     const sector = sectors[s];
                     const pathSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_paths` WHERE `sector_id`='{0}';"
                         .format(sector.id);
-                    const paths = await mysqlSync.querySync(mysql, pathSql);
+                    const paths = await mysqlSync.query(mysql, pathSql);
                     sector.paths = serialize(paths)
                     zone["sectors"].push(sector)
                 }

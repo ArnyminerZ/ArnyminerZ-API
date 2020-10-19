@@ -1,5 +1,5 @@
-require('../../src/utils/StringUtils')
-const {querySync} = require('../utils/mysql-sync')
+require('../utils/string-utils')
+const {query} = require('../utils/mysql-sync')
 
 module.exports = class FirebaseQuery {
     constructor(auth, mysql) {
@@ -25,7 +25,7 @@ module.exports = class FirebaseQuery {
                     const sql = "INSERT INTO `ArnyminerZ`.`users`(`firebase_uid`, `name`, `surname`, `username`, `email`, `profileImage`, `preferences`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{}')"
                         .format(userRecord.uid, nSplit[0], nSplit[1], username, email, userRecord.photoURL)
                     try {
-                        const result = await querySync(mysql, sql)
+                        const result = await query(mysql, sql)
                         console.log(result)
                     } catch (e) {
                         response.status(500).send(err)

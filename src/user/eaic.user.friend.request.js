@@ -1,8 +1,8 @@
 const {v4: uuidv4} = require('uuid');
 
 const {sendNotification} = require("../utils/FirebaseUtils");
-const {querySync} = require('../utils/mysql-sync')
-const {findUser} = require('../utils/UserUtils')
+const {query} = require('../utils/mysql-sync')
+const {findUser} = require('../utils/user-utils')
 
 module.exports = class FriendRequest {
     constructor(messaging, mysql) {
@@ -32,7 +32,7 @@ module.exports = class FriendRequest {
                 return response.status(400).send({error: 'friend-doesnt-exist'});
 
             // Now let's check if users are already friends
-            const alreadyFriends = await querySync(mysql, checkFriendsSql.format(caller.id, called.id))
+            const alreadyFriends = await query(mysql, checkFriendsSql.format(caller.id, called.id))
             if (alreadyFriends.length > 0)
                 return response.status(400).send({error: 'users-already-friends'});
 
@@ -41,7 +41,7 @@ module.exports = class FriendRequest {
             const agent = request.get('User-Agent');
             const uuid = uuidv4();
             // Execute the call
-            await querySync(mysql, requestSql.format(uuid, caller.id, called.id, ip, agent))
+            await query(mysql, requestSql.format(uuid, caller.id, called.id, ip, agent))
 
             // Send notification through the old firebase-uid-based receiver system
             sendNotification(messaging, called.firebase_uid, "*new_friend_request", "", {

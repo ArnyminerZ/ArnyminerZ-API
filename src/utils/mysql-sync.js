@@ -1,5 +1,5 @@
 module.exports = {
-    querySync: (connection, sql) => {
+    query: (connection, sql) => {
         return new Promise((accept, reject) => {
             connection.query(sql, (error, result) => {
                 if (error) reject(error)

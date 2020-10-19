@@ -16,7 +16,7 @@ module.exports =
                 const pathSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_paths` WHERE `id`='{0}';"
                     .format(`${params.path}`);
 
-                const path = (await mysqlSync.querySync(mysql, pathSql))[0];
+                const path = (await mysqlSync.query(mysql, pathSql))[0];
                 response.send(path)
             }
         }

@@ -18,27 +18,27 @@ module.exports = class EAICArea {
         if (params.area == null || params.area < 1)
             try {
                 const sql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_areas`;";
-                const areas = await mysqlSync.querySync(mysql, sql);
+                const areas = await mysqlSync.query(mysql, sql);
                 for (const a in areas)
                     if (areas.hasOwnProperty(a)) {
                         const area = areas[a];
                         area["zones"] = [];
                         const areaSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_zones` WHERE `area_id`='{0}';"
                             .format(area.id);
-                        const zones = await mysqlSync.querySync(mysql, areaSql);
+                        const zones = await mysqlSync.query(mysql, areaSql);
                         for (const z in zones)
                             if (zones.hasOwnProperty(z)) {
                                 const zone = zones[z];
                                 zone["sectors"] = [];
                                 const sectorSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_sectors` WHERE `climbing_zone`='{0}';"
                                     .format(zone.id);
-                                const sectors = await mysqlSync.querySync(mysql, sectorSql);
+                                const sectors = await mysqlSync.query(mysql, sectorSql);
                                 for (const s in sectors)
                                     if (sectors.hasOwnProperty(s)) {
                                         const sector = sectors[s];
                                         const pathSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_paths` WHERE `sector_id`='{0}';"
                                             .format(sector.id);
-                                        const paths = await mysqlSync.querySync(mysql, pathSql);
+                                        const paths = await mysqlSync.query(mysql, pathSql);
                                         sector.paths = serialize(paths)
                                         zone["sectors"].push(sector)
                                     }
@@ -54,24 +54,24 @@ module.exports = class EAICArea {
         else try {
             const sql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_areas` WHERE `id`='{0}';"
                 .format(params.area);
-            const area = (await mysqlSync.querySync(mysql, sql))[0]
+            const area = (await mysqlSync.query(mysql, sql))[0]
             const areaSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_zones` WHERE `area_id`='{0}';"
                 .format(area.id);
             area["zones"] = [];
-            const zones = await mysqlSync.querySync(mysql, areaSql);
+            const zones = await mysqlSync.query(mysql, areaSql);
             for (const z in zones)
                 if (zones.hasOwnProperty(z)) {
                     const zone = zones[z];
                     zone["sectors"] = [];
                     const sectorSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_sectors` WHERE `climbing_zone`='{0}';"
                         .format(zone.id);
-                    const sectors = await mysqlSync.querySync(mysql, sectorSql);
+                    const sectors = await mysqlSync.query(mysql, sectorSql);
                     for (const s in sectors)
                         if (sectors.hasOwnProperty(s)) {
                             const sector = sectors[s];
                             const pathSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_paths` WHERE `sector_id`='{0}';"
                                 .format(sector.id);
-                            const paths = await mysqlSync.querySync(mysql, pathSql);
+                            const paths = await mysqlSync.query(mysql, pathSql);
                             sector.paths = serialize(paths)
                             zone["sectors"].push(sector)
                         }

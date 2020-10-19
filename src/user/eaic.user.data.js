@@ -1,4 +1,4 @@
-const {getUser} = require('../utils/UserUtils')
+const {getUser} = require('../utils/user-utils')
 
 module.exports = class UserData {
     constructor(mysql) {

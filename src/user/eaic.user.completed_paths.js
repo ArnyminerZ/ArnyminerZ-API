@@ -1,5 +1,5 @@
-const {getUser} = require('../utils/UserUtils')
-const {querySync} = require('../utils/mysql-sync')
+const {getUser} = require('../utils/user-utils')
+const {query} = require('../utils/mysql-sync')
 
 module.exports = class UserCompletedPaths {
     constructor(mysql) {
@@ -19,7 +19,7 @@ module.exports = class UserCompletedPaths {
             if (user == null)
                 response.status(400).send({error: "user_not_found"})
 
-            const result = await querySync(
+            const result = await query(
                 mysql,
                 sql.format(
                     params.user,

@@ -1,4 +1,4 @@
-const {querySync} = require('../utils/mysql-sync')
+const {query} = require('../utils/mysql-sync')
 
 module.exports = class UserLog {
     constructor(mysql) {
@@ -18,9 +18,9 @@ module.exports = class UserLog {
                 .format(params.user, query.max != null ? ` LIMIT ${query.max}` : "");
 
             // First check if user exists
-            let result = await querySync(mysql, firebaseSql)
+            let result = await query(mysql, firebaseSql)
             if (result.length <= 0)
-                result = await querySync(mysql, userSql)
+                result = await query(mysql, userSql)
             // This is, if user doesn't exist
             if (result.length <= 0)
                 response.status(400).send({error: "user-doesnt-exist"})

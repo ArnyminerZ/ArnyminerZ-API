@@ -1,6 +1,6 @@
 const {sendNotification} = require("../utils/FirebaseUtils");
-const {querySync} = require('../utils/mysql-sync')
-const {findUser} = require('../utils/UserUtils')
+const {query} = require('../utils/mysql-sync')
+const {findUser} = require('../utils/user-utils')
 
 module.exports = class FriendDelete {
     constructor(messaging, mysql) {
@@ -31,13 +31,13 @@ module.exports = class FriendDelete {
                 return response.status(400).send({error: 'friend-doesnt-exist'});
 
             // Now check if users are friends
-            let friendsCheck = await querySync(mysql, checkFriendsUserSql.format(caller.id, called.id))
+            let friendsCheck = await query(mysql, checkFriendsUserSql.format(caller.id, called.id))
             if (friendsCheck.length <= 0)
-                friendsCheck = await querySync(mysql, checkFriendsFirebaseSql.format(caller.firebase_uid, called.firebase_uid))
+                friendsCheck = await query(mysql, checkFriendsFirebaseSql.format(caller.firebase_uid, called.firebase_uid))
             if (friendsCheck.length <= 0)
                 response.status(400).send({error: 'users-are-not-friends'});
 
-            await querySync(mysql, deleteSql.format(friendsCheck[0].id))
+            await query(mysql, deleteSql.format(friendsCheck[0].id))
             response.status(200).send({result: "ok"})
         } catch (e) {
             response.status(500).send({error: e});

@@ -1,4 +1,4 @@
-const {querySync} = require('../utils/mysql-sync')
+const {query} = require('../utils/mysql-sync')
 
 module.exports = class UsersList {
     constructor(mysql) {
@@ -9,7 +9,7 @@ module.exports = class UsersList {
         const sql = "SELECT * FROM `ArnyminerZ`.`users`;";
 
         try {
-            const result = await querySync(this.mysql, sql)
+            const result = await query(this.mysql, sql)
 
             let resultDataBuilder = [];
             for (const i in result)

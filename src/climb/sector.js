@@ -18,10 +18,10 @@ module.exports = class EAICSector {
         else {
             const sectorSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_sectors` WHERE `id`='{0}';"
                 .format(params.sector);
-            const sector = (await mysqlSync.querySync(mysql, sectorSql))[0];
+            const sector = (await mysqlSync.query(mysql, sectorSql))[0];
             const pathSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`climbing_paths` WHERE `sector_id`='{0}';"
                 .format(sector.id);
-            const paths = await mysqlSync.querySync(mysql, pathSql);
+            const paths = await mysqlSync.query(mysql, pathSql);
             sector.paths = serialize(paths)
             response.send(sector)
         }
