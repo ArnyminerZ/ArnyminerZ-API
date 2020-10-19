@@ -65,9 +65,18 @@ MYSQL_HOST=
 MYSQL_USER=
 MYSQL_PASS=
 
+[lanau]
+MAX_PEOPLE_PER_BOOKING=
+
+[token]
+TOKEN_EXPIRATION_TIME=(600000)
+TOKEN_LONG_MULTIPLIER=(6)
+TOKEN_STORAGE_EFFICIENT=(true)
+TOKENS_PATH=(_tokens.json)
+
 [other]
-HTTP_PORT=
-HTTPS_PORT=
+HTTP_PORT=(3000)
+HTTPS_PORT=(3001)
 DISABLE_HTTPS=[true|false]
 ```
 You should fill the fields with the corresponding parameters. All the parameters in `other` are optional.
