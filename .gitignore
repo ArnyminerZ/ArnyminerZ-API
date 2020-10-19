@@ -1,8 +1,18 @@
-serviceAccountKey.json
+# Node exclusions
 node_modules
+package-lock.json
+
+# IDE exclusions
 .idea
+*.code-workspace
+
+# Data files exclusions
+serviceAccountKey.json
 eaic.ini
+google_key.json
+.listeners.json
+
+# Some scripts exlusions
 deployment
 start_deployment.bat
 deploy.sh
-.listeners.json
