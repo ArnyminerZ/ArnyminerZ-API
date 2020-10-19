@@ -14,7 +14,7 @@ module.exports = class UserData {
             if (user == null)
                 response.status(400).send({error: "user_not_found"})
             else
-                return response.status(200).send({result: "ok", data: user})
+                return response.status(200).send({result: "ok", data: JSON.stringify(user.dataClass)})
         } catch (error) {
             response.status(500).send(error)
         }
