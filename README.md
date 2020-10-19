@@ -47,7 +47,7 @@ The port that will be used for HTTP requests.
 
 ## Required files ##
 The source installation dir should contain the following files:
-### eaic.ini ###
+### api.ini ###
 This contains the configuration data for the software, it should follow this format:
 ```ini
 [firebase]

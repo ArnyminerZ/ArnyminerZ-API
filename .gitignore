@@ -8,7 +8,7 @@ package-lock.json
 
 # Data files exclusions
 serviceAccountKey.json
-eaic.ini
+api.ini
 google_key.json
 .listeners.json
 

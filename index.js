@@ -1,6 +1,6 @@
 // #!/usr/bin/env node
 const propertiesReader = require('properties-reader');
-const properties = propertiesReader('./eaic.ini');
+const properties = propertiesReader('./api.ini');
 require('dotenv').config()
 
 require('./src/utils/string-utils')
