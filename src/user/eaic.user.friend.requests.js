@@ -1,52 +1,44 @@
+const {querySync} = require('../utils/mysql-sync')
+const {getUser} = require('../utils/UserUtils')
+
 module.exports = class FriendRequests {
     constructor(mysql) {
         this.mysql = mysql
     }
 
-    process(request, response) {
+    async process(request, response) {
         const params = request.params;
         const mysql = this.mysql;
 
-        const sql = "SELECT `timestamp`, `uuid`, `from_user` FROM `EscalarAlcoiaIComtat`.`friend_requests` WHERE `consumed`='0' AND `to_user`='{0}';".format(params.user);
+        const userIdSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`friend_requests` WHERE NOT `consumed`='1' AND `to_user_id`='{0}';"
+        const userFirebaseSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`friend_requests` WHERE NOT `consumed`='1' AND `to_user`='{0}';"
 
-        mysql.query(sql, function (error, result) {
-            if (error)
-                response.status(500).send({error: error});
+        try {
+            // First check if user exists
+            const user = await getUser(mysql, params.user)
+            if (user == null)
+                return response.status(400).send({error: 'user-doesnt-exist'});
+
+            let requests = await querySync(mysql, userIdSql.format(user.id))
+            if (requests.length <= 0)
+                requests = await querySync(mysql, userFirebaseSql.format(user.firebase_uid))
+            if (requests.length <= 0) // If user has no requests
+                return response.send({result: 'ok', data: []})
             else {
-                let builder = []
-                let counter = 0;
-                const toCount = result.length;
-                if (toCount > 0) {
-                    for (const r in result)
-                        if (result.hasOwnProperty(r)) {
-                            const request = result[r]
-                            const userSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`users` WHERE `uid`='{0}' LIMIT 1;".format(params.user);
-                            const fromUserSql = "SELECT * FROM `EscalarAlcoiaIComtat`.`users` WHERE `uid`='{0}' LIMIT 1;".format(request.from_user);
-
-                            mysql.query(userSql, function (error, userResult) {
-                                if (error)
-                                    response.status(500).send({error: error});
-                                else mysql.query(fromUserSql, function (error, fromUserResult) {
-                                    if (error)
-                                        response.status(500).send({error: error});
-                                    else {
-                                        if (userResult.length > 0)
-                                            request["user"] = userResult[0]
-                                        if (fromUserResult.length > 0)
-                                            request["requested_user"] = fromUserResult[0]
-
-                                        builder.push(request)
-
-                                        counter++
-                                        if (counter >= toCount)
-                                            response.status(200).send({result: "ok", data: builder})
-                                    }
-                                })
-                            })
-                        }
-                } else
-                    response.status(200).send({result: "ok", data: builder})
+                const builder = []
+                for (const r in requests)
+                    if (requests.hasOwnProperty(r)) {
+                        const request = requests[r]
+                        const caller = await getUser(mysql, request.from_user_id) || await getUser(mysql, request.from_user)
+                        const called = await getUser(mysql, request.to_user_id) || await getUser(mysql, request.to_user)
+                        request["user"] = JSON.parse(JSON.stringify(caller))
+                        request["requested_user"] = JSON.parse(JSON.stringify(called))
+                        builder.push(request)
+                    }
+                response.status(200).send({result: "ok", data: builder})
             }
-        })
+        } catch (e) {
+            response.status(500).send({error: e});
+        }
     }
 }
