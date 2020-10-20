@@ -146,7 +146,6 @@ module.exports = {
      * Loads the data of a user
      * @param {Connection} conn The connected MySQL session
      * @param {string} userId The id or firebase_uid of the user to load
-     * @param {{date: Date, salt: String, userId: Number, hash: String, iterations: Number}} token The token of the user
      * @return {User|null} May return null if the user was not found
      */
     loadUser: async (conn, userId) => {
