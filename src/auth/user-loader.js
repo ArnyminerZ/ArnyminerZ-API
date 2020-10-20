@@ -1,6 +1,7 @@
 const {stringify: uuid_stringify} = require('uuid')
 
 const mysqlSync = require('../utils/mysql-sync')
+const tokenizer = require('../security/tokenizer')
 
 require('../utils/string-utils')
 
@@ -140,36 +141,53 @@ class User {
     }
 }
 
+/**
+ * Loads the data of a user
+ * @param {Connection} conn The connected MySQL session
+ * @param {string} userId The id or firebase_uid of the user to load
+ * @return {User|null} May return null if the user was not found
+ */
+const loadUser = async (conn, userId) => {
+    const idSql = `SELECT * FROM \`ArnyminerZ\`.\`users\` WHERE \`id\`=UNHEX(REPLACE('${userId}','-',''))`
+    console.log("Trying id search... SQL:", idSql)
+    const idResult = await mysqlSync.query(conn, idSql)
+    if (idResult.length > 0) {
+        const data = idResult[0]
+        console.log("  Result:", data.id)
+        console.log("  Result:", data.id.toString())
+        data["id"] = uuid_stringify(data.id)
+        return new User(conn, data)
+    }
+
+    const firebaseSql = "SELECT * FROM `ArnyminerZ`.`users` WHERE `firebase_uid`='{0}';"
+        .format(userId)
+    console.log("Trying firebase search... SQL:", firebaseSql)
+    const firebaseResult = await mysqlSync.query(conn, firebaseSql)
+    if (firebaseResult.length > 0) {
+        const data = firebaseResult[0]
+        data["id"] = uuid_stringify(data.id)
+        return new User(conn, data)
+    }
+
+    return null
+}
+
 module.exports = {
     User,
-    /**
-     * Loads the data of a user
-     * @param {Connection} conn The connected MySQL session
-     * @param {string} userId The id or firebase_uid of the user to load
-     * @return {User|null} May return null if the user was not found
-     */
-    loadUser: async (conn, userId) => {
-        const idSql = `SELECT * FROM \`ArnyminerZ\`.\`users\` WHERE \`id\`=UNHEX(REPLACE('${userId}','-',''))`
-        console.log("Trying id search... SQL:", idSql)
-        const idResult = await mysqlSync.query(conn, idSql)
-        if (idResult.length > 0) {
-            const data = idResult[0]
-            console.log("  Result:", data.id)
-            console.log("  Result:", data.id.toString())
-            data["id"] = uuid_stringify(data.id)
-            return new User(conn, data)
-        }
+    loadUser,
+    processUser: async (req, res, con) => {
+        const body = req.body
+        const token = body.token
 
-        const firebaseSql = "SELECT * FROM `ArnyminerZ`.`users` WHERE `firebase_uid`='{0}';"
-            .format(userId)
-        console.log("Trying firebase search... SQL:", firebaseSql)
-        const firebaseResult = await mysqlSync.query(conn, firebaseSql)
-        if (firebaseResult.length > 0) {
-            const data = firebaseResult[0]
-            data["id"] = uuid_stringify(data.id)
-            return new User(conn, data)
-        }
+        if (!token)
+            return res.status(400).send({error: "missing-data"})
 
-        return null
+        const tokenData = await tokenizer.getToken(token)
+        const user = await loadUser(con, tokenData.userId)
+
+        if (!user)
+            return res.status(400).send({error: "token-not-valid"})
+
+        res.send(JSON.stringify(user.dataClass))
     }
 }
