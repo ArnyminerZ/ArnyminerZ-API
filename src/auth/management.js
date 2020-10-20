@@ -104,6 +104,7 @@ module.exports = {
             // And return the successful result
             res.send({result: 'ok'})
         } catch (e) {
+            console.error("Could not confirm email:", e)
             res.status(500).send(e)
         }
     }
