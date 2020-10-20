@@ -32,6 +32,7 @@ module.exports = {
                 }
             }
         } catch (e) {
+            console.error('Could not log in:', e)
             return res.status(500).send(e)
         }
     }
