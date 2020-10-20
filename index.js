@@ -148,7 +148,7 @@ con.connect(function (error) {
         const UserChangeUsername = require('./src/user/eaic.user.change.username');
         const UserChangeProfileImage = require('./src/user/eaic.user.change.image');
 
-        const {processLogin} = require('./src/auth/login')
+        const {processLogin, processTokenValidation} = require('./src/auth/login')
         const {processCreatePassword, processConfirmPassword} = require('./src/auth/management')
         const {processAvatarChange, processDataChange} = require('./src/auth/profile')
         const {processUser} = require('./src/auth/user-loader')
@@ -245,6 +245,7 @@ con.connect(function (error) {
         console.log("🔁 Adding POST listeners...")
         app.post('/user', (q, r) => processUser(q, r, con))
         app.post('/login', (q, r) => processLogin(q, r, con))
+        app.post('/token', (q, r) => processTokenValidation(q, r, con))
         app.post('/create-password', (q, r) => processCreatePassword(q, r, con))
         app.post('/confirm-password', (q, r) => processConfirmPassword(q, r, con))
         app.post('/profile/avatar', (q, r) => processAvatarChange(q, r, con))
