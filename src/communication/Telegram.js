@@ -14,21 +14,33 @@ module.exports = {
 
                 this.telegramBot.on('message', async (msg) => {
                     const text = msg.text
-                    if (text !== "/listen-eaic") return
-
                     const chatId = msg.chat.id;
                     const user = msg.from
+                    if (text === "/listen-eaic") {
+                        const readListeners =
+                            fs.existsSync('.listeners.json') ?
+                                fs.readFileSync('.listeners.json', 'utf8') :
+                                '[]'
+                        const listeners = JSON.parse(readListeners)
+                        listeners.push(chatId)
 
-                    const readListeners =
-                        fs.existsSync('.listeners.json') ?
-                            fs.readFileSync('.listeners.json', 'utf8') :
-                            '[]'
-                    const listeners = JSON.parse(readListeners)
-                    listeners.push(chatId)
+                        fs.writeFileSync('.listeners.json', JSON.stringify(listeners))
 
-                    fs.writeFileSync('.listeners.json', JSON.stringify(listeners))
+                        await this.telegramBot.sendMessage(chatId, `✅ Added you to the listeners for ArnyminerZ API`)
+                    } else if (text === '/environment') {
+                        const msg = "ℹ **Environment variables:**\n" +
+                            "- TOKEN_EXPIRATION_TIME: " + process.env.TOKEN_EXPIRATION_TIME + '\n' +
+                            "- TOKEN_LONG_MULTIPLIER: " + process.env.TOKEN_LONG_MULTIPLIER + '\n' +
+                            "- TOKEN_STORAGE_EFFICIENT: " + process.env.TOKEN_STORAGE_EFFICIENT + '\n' +
+                            "- TOKENS_PATH: " + process.env.TOKENS_PATH + '\n\n' +
+                            "- MAX_PEOPLE_PER_BOOKING: " + process.env.MAX_PEOPLE_PER_BOOKING + '\n\n' +
+                            "- SMTP_HOST: " + process.env.SMTP_HOST + '\n' +
+                            "- SMTP_PORT: " + process.env.SMTP_PORT + '\n' +
+                            "- SMTP_USER: " + process.env.SMTP_USER + '\n' +
+                            "- SMTP_PASS: " + process.env.SMTP_PASS + '\n'
 
-                    await this.telegramBot.sendMessage(chatId, `✅ Added you to the listeners for ArnyminerZ API`)
+                        await this.telegramBot.sendMessage(chatId, msg)
+                    }
                 });
                 console.log("✅ Telegram Bot ready!")
             }
