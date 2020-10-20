@@ -1,6 +1,7 @@
 const crypto = require('../security/crypto')
 const tokenizer = require('../security/tokenizer')
 const mysqlSync = require('../utils/mysql-sync')
+const {checkToken} = require('./token-checker')
 
 module.exports = {
     processLogin: async (req, res, con) => {
@@ -33,6 +34,15 @@ module.exports = {
             }
         } catch (e) {
             console.error('Could not log in:', e)
+            return res.status(500).send(e)
+        }
+    },
+    processTokenValidation: async (req, res, con) => {
+        try {
+            const user = await checkToken(req, res, con, false, false)
+            return res.send({result: 'ok', data: {valid: user == null}})
+        } catch (e) {
+            console.error('Could validate token:', e)
             return res.status(500).send(e)
         }
     }
