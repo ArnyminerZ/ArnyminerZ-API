@@ -25,7 +25,7 @@ module.exports = {
                     if (passwordCorrect) {
                         const token = tokenizer.generateToken(data.hash, data.salt, data.iterations, userId)
                         console.log("New user logged in with token", token)
-                        res.cookie('token', token, {maxAge: (body.remember === 'true' ? TOKEN_LONG_MULTIPLIER : 1) * TOKEN_EXPIRATION_TIME})
+                        res.cookie('token', token, {maxAge: (body.remember === 'true' ? process.env.TOKEN_LONG_MULTIPLIER : 1) * process.env.TOKEN_EXPIRATION_TIME})
                         res.send({token});
                     } else
                         res.status(400).send({error: 'wrong-password'});
