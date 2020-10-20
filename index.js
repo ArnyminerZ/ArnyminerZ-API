@@ -151,6 +151,7 @@ con.connect(function (error) {
         const {processLogin} = require('./src/auth/login')
         const {processCreatePassword, processConfirmPassword} = require('./src/auth/management')
         const {processAvatarChange, processDataChange} = require('./src/auth/profile')
+        const {processUser} = require('./src/auth/user-loader')
 
         const {processLaNauProfileDataChange} = require('./src/lanau/profile/data')
         const {processLaNauBookCreation} = require('./src/lanau/book/creation')
@@ -242,6 +243,7 @@ con.connect(function (error) {
         }) // Handles 404 since it's the last get
 
         console.log("🔁 Adding POST listeners...")
+        app.post('/user', (q, r) => processUser(q, r, con))
         app.post('/login', (q, r) => processLogin(q, r, con))
         app.post('/create-password', (q, r) => processCreatePassword(q, r, con))
         app.post('/confirm-password', (q, r) => processConfirmPassword(q, r, con))
