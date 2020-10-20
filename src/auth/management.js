@@ -2,6 +2,7 @@ const fs = require('fs')
 const nodemailer = require('nodemailer')
 
 const mysqlSync = require('../utils/mysql-sync')
+const crypto = require('../security/crypto')
 
 module.exports = {
     processCreatePassword: async (req, res, con) => {
