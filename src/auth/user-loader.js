@@ -1,7 +1,6 @@
-const uuid = require('uuid')
+const {stringify: uuid_stringify} = require('uuid')
 
-const mysql = require('../utils/mysql-sync')
-const tokenizer = require('../security/tokenizer')
+const mysqlSync = require('../utils/mysql-sync')
 
 require('../utils/string-utils')
 
@@ -55,7 +54,7 @@ class User {
     async getPermissions() {
         const checkSql = "SELECT `section_name` FROM `ArnyminerZ`.`user_section_rel` WHERE `user`=UNHEX(REPLACE('{0}','-',''));"
             .format(this.id)
-        const result = await mysql.query(this.conn, checkSql)
+        const result = await mysqlSync.query(this.conn, checkSql)
         let builder = []
 
         for (const r in result)
@@ -76,7 +75,7 @@ class User {
         // TODO: Only update stored data if successfully updated db
         this.profileImage = newAddress
         this.dataClass.profileImage = newAddress
-        return mysql.query(this.conn, updateSql)
+        return mysqlSync.query(this.conn, updateSql)
     }
 
     /**
@@ -86,7 +85,7 @@ class User {
     async getMeta() {
         const getSql = "SELECT `meta` FROM `ArnyminerZ`.`users` WHERE `id`=UNHEX(REPLACE('{0}','-',''));"
             .format(this.id)
-        const result = await mysql.query(this.conn, getSql)
+        const result = await mysqlSync.query(this.conn, getSql)
         if (result.length <= 0)
             throw {error: ''}
         return JSON.parse(result[0].meta)
@@ -112,7 +111,7 @@ class User {
 
         const updateSql = "UPDATE `ArnyminerZ`.`users` SET {0} WHERE `id`=UNHEX(REPLACE('{1}','-',''));"
             .format(updates, this.id)
-        await mysql.query(this.conn, updateSql)
+        await mysqlSync.query(this.conn, updateSql)
     }
 
     /**
@@ -137,7 +136,7 @@ class User {
         const updateSql = "UPDATE `ArnyminerZ`.`users` SET `meta`='{0}' WHERE `id`=UNHEX(REPLACE('{1}','-',''));"
             .format(JSON.stringify(meta), this.id)
         console.log("SQL:", updateSql)
-        return await mysql.query(this.conn, updateSql)
+        return await mysqlSync.query(this.conn, updateSql)
     }
 }
 
@@ -152,19 +151,23 @@ module.exports = {
      */
     loadUser: async (conn, userId) => {
         const idSql = `SELECT * FROM \`ArnyminerZ\`.\`users\` WHERE \`id\`=UNHEX(REPLACE('${userId}','-',''))`
-        const idResult = await mysql.query(conn, idSql)
+        console.log("Trying id search... SQL:", idSql)
+        const idResult = await mysqlSync.query(conn, idSql)
         if (idResult.length > 0) {
             const data = idResult[0]
-            data.id = uuid.stringify(data.id)
+            console.log("  Result:", data.id)
+            console.log("  Result:", data.id.toString())
+            data["id"] = uuid_stringify(data.id)
             return new User(conn, data)
         }
 
         const firebaseSql = "SELECT * FROM `ArnyminerZ`.`users` WHERE `firebase_uid`='{0}';"
             .format(userId)
-        const firebaseResult = await mysql.query(conn, firebaseSql)
+        console.log("Trying firebase search... SQL:", firebaseSql)
+        const firebaseResult = await mysqlSync.query(conn, firebaseSql)
         if (firebaseResult.length > 0) {
             const data = firebaseResult[0]
-            data.id = uuid.stringify(data.id)
+            data["id"] = uuid_stringify(data.id)
             return new User(conn, data)
         }
 
