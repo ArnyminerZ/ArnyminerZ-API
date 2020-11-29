@@ -4,7 +4,6 @@ package-lock.json
 
 # IDE exclusions
 .idea
-*.code-workspace
 
 # Data files exclusions
 serviceAccountKey.json
