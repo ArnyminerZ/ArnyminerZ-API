@@ -7,7 +7,7 @@
   "scripts": {
     "test": "node test.js",
     "start": "node index.js",
-    "install": "sudo bash scripts/install.sh"
+    "install": "bash scripts/install.sh"
   },
   "keywords": [],
   "author": "ArnyminerZ",
