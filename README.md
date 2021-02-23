@@ -1,4 +1,13 @@
 # Escalar Alcoià i Comtat #
+![[Commit Activity](https://github.com/ArnyminerZ/ArnyminerZ-API/commits/master)](https://img.shields.io/github/commit-activity/y/ArnyminerZ/ArnyminerZ-API?style=for-the-badge)
+![[GitHub](https://github.com/ArnyminerZ/ArnyminerZ-API/blob/master/LICENSE)](https://img.shields.io/github/license/ArnyminerZ/ArnyminerZ-API?style=for-the-badge)
+
+![GitHub branch checks state](https://img.shields.io/github/checks-status/ArnyminerZ/ArnyminerZ-API/master?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/ArnyminerZ/ArnyminerZ-API?style=for-the-badge)
+
+![[GitHub issues](https://github.com/ArnyminerZ/ArnyminerZ-API/issues)](https://img.shields.io/github/issues/ArnyminerZ/ArnyminerZ-API?style=for-the-badge)
+![[GitHub pull requests](https://github.com/ArnyminerZ/ArnyminerZ-API/pulls)](https://img.shields.io/github/issues-pr/ArnyminerZ/ArnyminerZ-API?style=for-the-badge)
+
 ## Environment variables ##
 ### `TELEGRAM_TOKEN` 
 Should be set matching the token of the Telegram bot from [@BotFather](https://telegram.me/BotFather)
