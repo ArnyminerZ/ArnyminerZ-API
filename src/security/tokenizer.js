@@ -45,7 +45,7 @@ module.exports = {
     TOKEN_EXPIRATION_TIME, EFFICIENT_TOKEN_STORAGE,
     // Will generate at most 1461501637330902918203684832716283019655932542976 tokens, but max array size is 4294967296,
     //   so why does this matter?
-    generateToken: (hash, salt, iterations, userId) => {
+    generateToken: (hash, salt, iterations, userId, date = new Date()) => {
         const authTokens = getAuthTokens()
 
         let id = crypto.randomBytes(20).toString('hex'); // Generate a token
@@ -57,8 +57,7 @@ module.exports = {
             }
 
         storeAuthToken(id, {
-            date: new Date(),
-            hash, salt, iterations, userId
+            date, hash, salt, iterations, userId
         })
 
         return id

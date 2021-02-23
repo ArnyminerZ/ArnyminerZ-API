@@ -3,7 +3,7 @@
  *
  * @author ArnyminerZ
  * @version 1 2020/10/15
- * @file token-checker.js
+ * @file token-root.js
  */
 
 //<editor-fold desc=">> Import some required scripts">
@@ -38,7 +38,7 @@ module.exports = {
         } else {
             const tokenData = tokenizer.getToken(token)
             const userId = tokenData.userId;
-            const user = await loadUser(con, userId, tokenData)
+            const user = await loadUser(con, userId)
 
             if (user == null) {
                 tokenizer.deleteAuthToken(token)

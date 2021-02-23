@@ -24,7 +24,11 @@ module.exports = {
                 else {
                     const passwordCorrect = await crypto.verifyPassword(data, body.password)
                     if (passwordCorrect) {
-                        const token = tokenizer.generateToken(data.hash, data.salt, data.iterations, userId)
+                        const token = tokenizer.generateToken(
+                            data.hash, data.salt, data.iterations, userId,
+                            // If remember is checked, the token will last 30 days
+                            new Date(body.remember === 'true' ? new Date(30 * 24 * 60 * 60 * 1000) : new Date())
+                        )
                         console.log("New user logged in with token", token)
                         res.cookie('token', token, {maxAge: (body.remember === 'true' ? process.env.TOKEN_LONG_MULTIPLIER : 1) * process.env.TOKEN_EXPIRATION_TIME})
                         res.send({token});
