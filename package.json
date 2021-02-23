@@ -1,17 +1,22 @@
 {
-  "name": "api-extended",
+  "name": "arnyminerz-api",
   "version": "1.0.0",
-  "description": "",
-  "repository": "https://gitlab.arnyminerz.com/escalar-alcoia-i-comtat/api",
+  "description": "The API service for all the ArnyminerZ's products",
+  "repository": "https://gitlab.com/ArnyminerZ/api",
   "main": "index.js",
   "scripts": {
     "test": "node test.js",
     "start": "node index.js",
     "install": "bash scripts/install.sh"
   },
-  "keywords": [],
+  "keywords": [
+    "arnyminerz",
+    "arny",
+    "api",
+    "service"
+  ],
   "author": "ArnyminerZ",
-  "license": "ISC",
+  "license": "GPL-3.0-or-later",
   "dependencies": {
     "@sentry/node": "^5.25.0",
     "@sentry/tracing": "^5.25.0",
