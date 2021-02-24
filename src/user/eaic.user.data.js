@@ -1,4 +1,5 @@
 const {loadUser} = require('../auth/user-loader')
+const {getToken, isTokenValid} = require('../security/tokenizer')
 
 module.exports = class UserData {
     constructor(mysql) {
@@ -10,7 +11,12 @@ module.exports = class UserData {
         const mysql = this.mysql;
 
         try {
-            const user = await loadUser(mysql, params.user)
+            const tokenRaw = params.token;
+            if (tokenRaw != null && !isTokenValid(tokenRaw))
+                return response.status(401).send({error: "token-expired"})
+            const token = tokenRaw != null ? getToken(tokenRaw) : null
+            const userId = params.user != null ? params.user : token != null ? token : null;
+            const user = await loadUser(mysql, userId)
             if (user == null)
                 response.status(400).send({error: "user_not_found"})
             else

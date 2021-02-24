@@ -207,6 +207,7 @@ con.connect(function (error) {
         app.get("/firebase/authenticate", (req, res) => (new FirebaseAuthenticate(auth, con)).process(req, res));
         app.get("/firebase/query", (req, res) => (new FirebaseQuery(auth, con)).process(req, res));
 
+        app.get("/user_data/:token", (req, res) => (new UserData(con).process(req, res)));
         app.get("/user/:user", (req, res) => (new UserData(con).process(req, res)));
         app.get("/user/:user/log", (req, res) => (new UserLog(con).process(req, res))); // TODO: Wtf is this?
         app.get("/user/:user/friend/request/:other", (req, res) => (new FriendRequest(messaging, con).process(req, res)));

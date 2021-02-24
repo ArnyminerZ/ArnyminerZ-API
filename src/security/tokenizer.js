@@ -65,9 +65,9 @@ module.exports = {
     /**
      * Gets a token from its key
      * @param token {String} The token key
-     * @return {{date: Date, salt: String, userId: Number, hash: String, iterations: Number}} The token value
+     * @return {{date: Date, salt: String, userId: String, hash: String, iterations: Number}|null} The token value or null if expired
      */
-    getToken: (token) => getAuthTokens()[token],
+    getToken: (token) => this.isTokenValid(token) ? getAuthTokens()[token] : null,
     isTokenValid: (token) => {
         const t = getAuthTokens()[token]
         if (t === undefined) return false
