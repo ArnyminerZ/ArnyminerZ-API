@@ -6,8 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node test.js",
-    "start": "node index.js",
-    "install": "bash scripts/install.sh"
+    "start": "node index.js"
   },
   "keywords": [
     "arnyminerz",

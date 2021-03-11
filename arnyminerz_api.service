@@ -1,5 +1,5 @@
 [Unit]
-Description=EAIC API Service
+Description=ArnyminerZ API Service
 After=network.target
 StartLimitIntervalSec=0
 

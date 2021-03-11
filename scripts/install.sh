@@ -5,7 +5,7 @@ fi
 
 INSTALLATION_DIR="$(dirname "$PWD")"
 
-read -p "ℹ Please, check that $INSTALLATION_DIR is the installation dir for EAIC API. y/n" -n 1 -r
+read -p "ℹ Please, check that $INSTALLATION_DIR is the installation dir for ArnyminerZ API. y/n" -n 1 -r
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo
@@ -27,33 +27,25 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
   echo "🔁 Checking for the required configuration files..."
 
-  INI_FILE="$PWD/eaic.ini"
+  INI_FILE="$PWD/api.ini"
   if [[ -f "$INI_FILE" ]]; then
-    echo "✅ eaic.ini"
+    echo "✅ api.ini"
   else
-    echo "🛑 The installation dir doesn't contain any eaic.ini file. Please, store one and run the script again."
-    exit
-  fi
-
-  ACCOUNT_KEY_FILE="$PWD/serviceAccountKey.json"
-  if [[ -f "$ACCOUNT_KEY_FILE" ]]; then
-    echo "✅ serviceAccountKey.json"
-  else
-    echo "🛑 The installation dir doesn't contain any serviceAccountKey.json file. Please, store one and run the script again."
+    echo "🛑 The installation dir doesn't contain any api.ini file. Please, store one and run the script again."
     exit
   fi
 
   SYSTEMD_DIR="/etc/systemd/system"
-  SERVICE_FILE="$SYSTEMD_DIR/eaic_api.service"
+  SERVICE_FILE="$SYSTEMD_DIR/arnyminerz_api.service"
   if [[ -f "$SERVICE_FILE" ]]; then
     echo "🔁 Removing old service..."
-    systemctl stop eaic_api
+    systemctl stop arnyminerz_api
     rm "$SERVICE_FILE"
     systemctl daemon-reload
   fi
 
   echo "🔁 Copying service file..."
-  cp eaic_api.service "$SYSTEMD_DIR"
+  cp arnyminerz_api.service "$SYSTEMD_DIR"
   echo "🔁 Filling service placeholders..."
   if [[ -z "${TELEGRAM_TOKEN}" ]]; then
     echo "⚠ TELEGRAM_TOKEN not defined, Telegram functionality will be disabled."
