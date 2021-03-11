@@ -8,9 +8,6 @@ let warn = ""
 if (!fs.existsSync('./api.ini'))
     error += `🛑 ${Color.BgRed}eaic.ini${Color.Reset}${Color.FgRed} doesn't exist${Color.Reset}\n`
 
-if (!fs.existsSync('./serviceAccountKey.json'))
-    error += `🛑 ${Color.BgRed}serviceAccountKey.json${Color.Reset}${Color.FgRed} doesn't exist${Color.Reset}\n`
-
 if (!process.env.TELEGRAM_TOKEN)
     warn += `⚠ ${Color.BgYellow}TELEGRAM_TOKEN${Color.Reset}${Color.FgYellow} is not set, Telegram functionality won't be usable${Color.Reset}\n`
 
