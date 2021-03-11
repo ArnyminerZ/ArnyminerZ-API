@@ -13,9 +13,6 @@ const httpPort = properties.get("other.HTTP_PORT") || 3000;
 const httpsPort = properties.get("other.HTTPS_PORT") || 3001;
 
 const mysql = require('mysql')
-const admin = require("firebase-admin");
-const firebase = require("firebase/app");
-require("firebase/auth");
 
 const fs = require('fs');
 
@@ -101,26 +98,6 @@ con.connect(function (error) {
     else {
         console.log("✅ MySQL Connected!")
 
-        const serviceAccount = require('./serviceAccountKey.json')
-
-        console.log("🔁 Initializing Firebase Admin...")
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount),
-            databaseURL: properties.get('firebase.DATABASE_URL')
-        });
-
-        console.log("🔁 Initializing Firebase...")
-        firebase.initializeApp({
-            apiKey: properties.get('firebase.API_KEY'),
-            authDomain: properties.get('firebase.AUTH_DOMAIN'),
-            databaseURL: properties.get('firebase.DATABASE_URL'),
-            projectId: properties.get('firebase.PROJECT_ID'),
-            storageBucket: properties.get('firebase.STORAGE_BUCKET'),
-            messagingSenderId: properties.get('firebase.MESSAGING_SERVER_ID'),
-            appId: properties.get('firebase.APP_ID'),
-            measurementId: properties.get('firebase.MEASUREMENT_ID')
-        })
-
         const http = require('http');
         const https = require('https');
         const express = require('express');
@@ -128,10 +105,6 @@ con.connect(function (error) {
         const cors = require('cors');
 
         console.log("🔁 Setting Up Classes...")
-        const FirebaseAuthenticate = require("./src/firebase/firebase.authenticate");
-        const FirebaseNotify = require("./src/firebase/firebase.notify");
-        const FirebaseQuery = require("./src/firebase/firebase.query");
-
         const FriendRequest = require("./src/user/eaic.user.friend.request");
         const FriendDelete = require("./src/user/eaic.user.friend.delete");
         const FriendRequests = require("./src/user/eaic.user.friend.requests");
@@ -203,10 +176,6 @@ con.connect(function (error) {
         const auth = admin.auth()
 
         console.log("🔁 Adding GET Listeners...")
-        app.get("/firebase/notify", (req, res) => (new FirebaseNotify(messaging)).process(req, res));
-        app.get("/firebase/authenticate", (req, res) => (new FirebaseAuthenticate(auth, con)).process(req, res));
-        app.get("/firebase/query", (req, res) => (new FirebaseQuery(auth, con)).process(req, res));
-
         app.get("/user_data/:token", (req, res) => (new UserData(con).process(req, res)));
         app.get("/user/:user", (req, res) => (new UserData(con).process(req, res)));
         app.get("/user/:user/log", (req, res) => (new UserLog(con).process(req, res))); // TODO: Wtf is this?
