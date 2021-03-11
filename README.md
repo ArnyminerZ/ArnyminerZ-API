@@ -59,16 +59,6 @@ The source installation dir should contain the following files:
 ### api.ini ###
 This contains the configuration data for the software, it should follow this format:
 ```ini
-[firebase]
-API_KEY=
-AUTH_DOMAIN=
-DATABASE_URL=
-PROJECT_ID=
-STORAGE_BUCKET=
-MESSAGING_SENDER_URL=
-APP_ID=
-MEASUREMENT_ID=
-
 [mysql]
 MYSQL_HOST=
 MYSQL_USER=
@@ -89,24 +79,6 @@ HTTPS_PORT=(3001)
 DISABLE_HTTPS=[true|false]
 ```
 You should fill the fields with the corresponding parameters. All the parameters in `other` are optional.
-
-### serviceAccountKey.json ###
-This contains the Firebase Admin credentials.
-```json
-{
-  "type": "",
-  "project_id": "",
-  "private_key_id": "",
-  "private_key": "",
-  "client_email": "",
-  "client_id": "",
-  "auth_uri": "",
-  "token_uri": "",
-  "auth_provider_x509_cert_url": "",
-  "client_x509_cert_url": ""
-}
-```
-You should fill the fields with the corresponding parameters.
 
 ## Feedback ##
 Every call to the API gets a JSON response. If it contains a key named `result` with a value `ok` this usually means that everything went ok, and a key named `data` should exist, if not said that the result key should be different.
