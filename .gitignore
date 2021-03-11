@@ -1,19 +1,11 @@
 # Node exclusions
 node_modules
-package-lock.json
 
 # IDE exclusions
 .idea
 
 # Data files exclusions
-serviceAccountKey.json
 api.ini
-google_key.json
 .listeners.json
 .tokens.json
 .env
-
-# Some scripts exlusions
-deployment
-start_deployment.bat
-deploy.sh
